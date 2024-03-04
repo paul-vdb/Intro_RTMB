@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>Introduction to Linear Models - RTMB</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Introduction to Linear Models - RTMB</h1>
+
+
+<div id="TOC">
+<ul>
+<li><a href="#what-is-rtmb" id="toc-what-is-rtmb">What is RTMB</a></li>
+<li><a href="#the-simple-linear-model" id="toc-the-simple-linear-model">The simple Linear Model</a></li>
+<li><a href="#lm-in-rtmb" id="toc-lm-in-rtmb">LM in RTMB</a></li>
+</ul>
+</div>
+
+<div id="what-is-rtmb" class="section level2">
+<h2>What is RTMB</h2>
+<p>RTMB takes standard R code and compiles it through a single run of
+the R code, into C++ to run much quicker. The first advantage of writing
+a function compatible with RTMB is that you can run your function at the
+speed of C++ while writing functions in the style of R. A lot of the
+computation efficiency is done on the back end so that the user can
+write very basic and easy to understand R code to define their
+models.</p>
+<p>The bread and butter of RTMB though is Automatic Differentiation
+(AD). This is an algorithm available through a C++ library (TMBAD.cpp)
+that creates a “tape” of operations to calculate derivatives efficiently
+and accurately. The general alternative is to use finite differencing,
+which requires more time (more calls to the function to evaluate nearby
+points) and is less accurate. Below we show an examples using RTMB to
+compare with a finite difference method from the R package
+<code>pracma</code>. You’ll see for this simple example, the finite
+difference method is good to approx 10^-7 while AD is accurate to
+nearliy computer precision at 10^-17. This accuracy begins to be really
+important for two things: * Finding minimum and maximum values
+(e.g. optimization). * Marginalizing over random effects through Laplace
+approximation.</p>
+<p>The second, Laplace approximation, requires an “inner” optimization
+step as well as the calculation of the Hessian (2nd order derivatives)
+to approximate an integral. We usually also do “outer” optimization as
+we find the maximum of the remaining fixed effect parameters of the
+likelihood which then requires a derivative of the Laplace
+approximation, which generates a 3rd order derivative. This becomes very
+unstable using finite differences and is why AD is so great. Before AD,
+a lot of packages would work out the exact derivatives for supported
+likelihoods to use Laplace (e.g. lmer I think).</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a>  pars <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a>  <span class="fu">set.seed</span>(<span class="dv">20180222</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a>  mean <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">5</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a>  Sigma <span class="ot">&lt;-</span> <span class="fu">rWishart</span>(<span class="dv">1</span>, <span class="dv">10</span>, <span class="fu">diag</span>(<span class="dv">5</span>))[, , <span class="dv">1</span>]</span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a>  x <span class="ot">&lt;-</span> MASS<span class="sc">::</span><span class="fu">mvrnorm</span>(<span class="dv">1</span>, mean, Sigma)</span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a>  </span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a>  <span class="do">## Make an RTMB compatible Normal function to take a derivative of. </span></span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a>  <span class="do">## Returns negative log likelihood.</span></span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a>  myMVNorm <span class="ot">&lt;-</span> <span class="cf">function</span>(x){</span>
+<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a>    <span class="sc">-</span><span class="fu">dmvnorm</span>(x, mean, Sigma, <span class="at">log =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a>  }</span>
+<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a>  </span>
+<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a>  <span class="do">## Define the function for </span></span>
+<span id="cb1-14"><a href="#cb1-14" tabindex="-1"></a>  </span>
+<span id="cb1-15"><a href="#cb1-15" tabindex="-1"></a>  <span class="do">## Finite difference:</span></span>
+<span id="cb1-16"><a href="#cb1-16" tabindex="-1"></a>  grFD <span class="ot">&lt;-</span> pracma<span class="sc">::</span><span class="fu">grad</span>( myMVNorm, <span class="at">x0 =</span> x )      <span class="do">## Gradient (first order deriatives)</span></span>
+<span id="cb1-17"><a href="#cb1-17" tabindex="-1"></a>  hessFD <span class="ot">&lt;-</span> pracma<span class="sc">::</span><span class="fu">hessian</span>( myMVNorm, <span class="at">x0 =</span> x ) <span class="do">## 2nd order partial derivatives &quot;Hessian&quot;</span></span>
+<span id="cb1-18"><a href="#cb1-18" tabindex="-1"></a>  </span>
+<span id="cb1-19"><a href="#cb1-19" tabindex="-1"></a>  <span class="do">## Now do it with RTMB</span></span>
+<span id="cb1-20"><a href="#cb1-20" tabindex="-1"></a>  obj <span class="ot">&lt;-</span> <span class="fu">MakeTape</span>(myMVNorm, x)</span>
+<span id="cb1-21"><a href="#cb1-21" tabindex="-1"></a>  <span class="fu">obj</span>(x) <span class="sc">==</span> <span class="fu">myMVNorm</span>(x)  <span class="do">## Call the function and check it.</span></span>
+<span id="cb1-22"><a href="#cb1-22" tabindex="-1"></a><span class="co">#&gt; [1] TRUE</span></span>
+<span id="cb1-23"><a href="#cb1-23" tabindex="-1"></a>  grADfn <span class="ot">&lt;-</span> obj<span class="sc">$</span><span class="fu">jacfun</span>()  <span class="do">## Create a gradient function &quot;jacobian&quot;</span></span>
+<span id="cb1-24"><a href="#cb1-24" tabindex="-1"></a>  grAD <span class="ot">&lt;-</span> <span class="fu">grADfn</span>(x)       </span>
+<span id="cb1-25"><a href="#cb1-25" tabindex="-1"></a>  hessADfn <span class="ot">&lt;-</span> grADfn<span class="sc">$</span><span class="fu">jacfun</span>()  <span class="do">## Create a Hessian function</span></span>
+<span id="cb1-26"><a href="#cb1-26" tabindex="-1"></a>  hessAD <span class="ot">&lt;-</span> <span class="fu">hessADfn</span>(x)    </span>
+<span id="cb1-27"><a href="#cb1-27" tabindex="-1"></a></span>
+<span id="cb1-28"><a href="#cb1-28" tabindex="-1"></a>  grFD<span class="sc">-</span>grAD         <span class="do">## Nearly the same.</span></span>
+<span id="cb1-29"><a href="#cb1-29" tabindex="-1"></a><span class="co">#&gt;               [,1]          [,2]         [,3]          [,4]          [,5]</span></span>
+<span id="cb1-30"><a href="#cb1-30" tabindex="-1"></a><span class="co">#&gt; [1,] -1.442579e-11 -1.295703e-10 6.217389e-11 -2.828959e-11 -5.600864e-11</span></span>
+<span id="cb1-31"><a href="#cb1-31" tabindex="-1"></a>  hessFD <span class="sc">-</span> hessAD   <span class="do">## A little less accurate.</span></span>
+<span id="cb1-32"><a href="#cb1-32" tabindex="-1"></a><span class="co">#&gt;               [,1]          [,2]          [,3]          [,4]          [,5]</span></span>
+<span id="cb1-33"><a href="#cb1-33" tabindex="-1"></a><span class="co">#&gt; [1,]  1.136814e-07 -1.203314e-08 -1.702587e-08  6.127848e-09 -1.309743e-08</span></span>
+<span id="cb1-34"><a href="#cb1-34" tabindex="-1"></a><span class="co">#&gt; [2,] -1.203314e-08  2.088005e-07 -6.800355e-09 -2.036351e-08 -1.284167e-08</span></span>
+<span id="cb1-35"><a href="#cb1-35" tabindex="-1"></a><span class="co">#&gt; [3,] -1.702587e-08 -6.800355e-09  2.055042e-07 -1.003181e-08  1.138950e-08</span></span>
+<span id="cb1-36"><a href="#cb1-36" tabindex="-1"></a><span class="co">#&gt; [4,]  6.127848e-09 -2.036351e-08 -1.003181e-08  1.904034e-07 -7.260621e-09</span></span>
+<span id="cb1-37"><a href="#cb1-37" tabindex="-1"></a><span class="co">#&gt; [5,] -1.309743e-08 -1.284167e-08  1.138950e-08 -7.260621e-09  4.528078e-08</span></span>
+<span id="cb1-38"><a href="#cb1-38" tabindex="-1"></a>  </span>
+<span id="cb1-39"><a href="#cb1-39" tabindex="-1"></a>  <span class="do">## Now let&#39;s check the true difference. </span></span>
+<span id="cb1-40"><a href="#cb1-40" tabindex="-1"></a>  <span class="do">## Remember this is derivatives in terms of x, the data, of the neg log mvnorm.</span></span>
+<span id="cb1-41"><a href="#cb1-41" tabindex="-1"></a>  <span class="do">## Need some basic maths.</span></span>
+<span id="cb1-42"><a href="#cb1-42" tabindex="-1"></a>  prec <span class="ot">&lt;-</span> <span class="fu">solve</span>(Sigma)</span>
+<span id="cb1-43"><a href="#cb1-43" tabindex="-1"></a>  grTrue <span class="ot">&lt;-</span> <span class="fu">t</span>(prec<span class="sc">%*%</span>(x<span class="sc">-</span>mean))</span>
+<span id="cb1-44"><a href="#cb1-44" tabindex="-1"></a>  hessTrue <span class="ot">&lt;-</span> prec</span>
+<span id="cb1-45"><a href="#cb1-45" tabindex="-1"></a>  </span>
+<span id="cb1-46"><a href="#cb1-46" tabindex="-1"></a>  <span class="do">## Compare them:</span></span>
+<span id="cb1-47"><a href="#cb1-47" tabindex="-1"></a>  grTrue <span class="sc">-</span> grAD <span class="do">## VERY ACCURATE!!!!!</span></span>
+<span id="cb1-48"><a href="#cb1-48" tabindex="-1"></a><span class="co">#&gt;              [,1]         [,2]         [,3]          [,4] [,5]</span></span>
+<span id="cb1-49"><a href="#cb1-49" tabindex="-1"></a><span class="co">#&gt; [1,] 5.551115e-17 5.551115e-17 2.775558e-17 -2.775558e-17    0</span></span>
+<span id="cb1-50"><a href="#cb1-50" tabindex="-1"></a>  grTrue <span class="sc">-</span> grFD <span class="do">## Not as ACCURATE</span></span>
+<span id="cb1-51"><a href="#cb1-51" tabindex="-1"></a><span class="co">#&gt;              [,1]         [,2]          [,3]         [,4]         [,5]</span></span>
+<span id="cb1-52"><a href="#cb1-52" tabindex="-1"></a><span class="co">#&gt; [1,] 1.442585e-11 1.295704e-10 -6.217386e-11 2.828957e-11 5.600864e-11</span></span>
+<span id="cb1-53"><a href="#cb1-53" tabindex="-1"></a>  </span>
+<span id="cb1-54"><a href="#cb1-54" tabindex="-1"></a>  hessTrue <span class="sc">-</span> hessAD <span class="do">## VERY ACCURATE!!!!!</span></span>
+<span id="cb1-55"><a href="#cb1-55" tabindex="-1"></a><span class="co">#&gt;               [,1]          [,2]          [,3]         [,4]          [,5]</span></span>
+<span id="cb1-56"><a href="#cb1-56" tabindex="-1"></a><span class="co">#&gt; [1,] -2.775558e-17  6.938894e-18 -3.469447e-18 0.000000e+00  0.000000e+00</span></span>
+<span id="cb1-57"><a href="#cb1-57" tabindex="-1"></a><span class="co">#&gt; [2,]  6.938894e-18 -2.775558e-17 -6.938894e-18 0.000000e+00 -6.938894e-18</span></span>
+<span id="cb1-58"><a href="#cb1-58" tabindex="-1"></a><span class="co">#&gt; [3,] -1.040834e-17 -1.387779e-17  1.387779e-17 3.469447e-18  0.000000e+00</span></span>
+<span id="cb1-59"><a href="#cb1-59" tabindex="-1"></a><span class="co">#&gt; [4,]  6.938894e-18  3.469447e-18  3.469447e-18 0.000000e+00  6.938894e-18</span></span>
+<span id="cb1-60"><a href="#cb1-60" tabindex="-1"></a><span class="co">#&gt; [5,]  6.938894e-18 -6.938894e-18  3.469447e-18 0.000000e+00  0.000000e+00</span></span>
+<span id="cb1-61"><a href="#cb1-61" tabindex="-1"></a>  hessTrue <span class="sc">-</span> hessFD <span class="do">## Not as ACCURATE</span></span>
+<span id="cb1-62"><a href="#cb1-62" tabindex="-1"></a><span class="co">#&gt;               [,1]          [,2]          [,3]          [,4]          [,5]</span></span>
+<span id="cb1-63"><a href="#cb1-63" tabindex="-1"></a><span class="co">#&gt; [1,] -1.136814e-07  1.203314e-08  1.702587e-08 -6.127848e-09  1.309743e-08</span></span>
+<span id="cb1-64"><a href="#cb1-64" tabindex="-1"></a><span class="co">#&gt; [2,]  1.203314e-08 -2.088005e-07  6.800355e-09  2.036351e-08  1.284167e-08</span></span>
+<span id="cb1-65"><a href="#cb1-65" tabindex="-1"></a><span class="co">#&gt; [3,]  1.702587e-08  6.800355e-09 -2.055042e-07  1.003181e-08 -1.138950e-08</span></span>
+<span id="cb1-66"><a href="#cb1-66" tabindex="-1"></a><span class="co">#&gt; [4,] -6.127848e-09  2.036351e-08  1.003181e-08 -1.904034e-07  7.260621e-09</span></span>
+<span id="cb1-67"><a href="#cb1-67" tabindex="-1"></a><span class="co">#&gt; [5,]  1.309743e-08  1.284167e-08 -1.138950e-08  7.260621e-09 -4.528078e-08</span></span></code></pre></div>
+</div>
+<div id="the-simple-linear-model" class="section level2">
+<h2>The simple Linear Model</h2>
+<p>Consider Chinook stock recruitment data from the <code>FSAdata</code>
+package in R from 1979-2000.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">library</span>(FSAdata)</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="fu">data</span>(ChinookKR)</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a><span class="fu">str</span>(ChinookKR)</span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a><span class="co">#&gt; &#39;data.frame&#39;:    27 obs. of  3 variables:</span></span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a><span class="co">#&gt;  $ brood.year: int  1979 1980 1981 1982 1983 1984 1985 1986 1987 1988 ...</span></span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a><span class="co">#&gt;  $ spawners  : int  30637 21484 33857 31951 30784 16064 25676 113359 101717 79385 ...</span></span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a><span class="co">#&gt;  $ recruits  : int  200698 109430 50968 122187 368159 244052 188722 123247 72981 17450 ...</span></span></code></pre></div>
+<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAkAAAAJACAMAAABSRCkEAAAAWlBMVEUAAAAAADoAAGYAOpAAZrY6AAA6ADo6AGY6Ojo6OpA6kNtmAABmADpmtv+QOgCQkGaQ2/+2ZgC225C2/7a2///bkDrbkJDb2//b////tmb/25D//7b//9v///+84tkoAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAUOElEQVR4nO2dbWPaOhJG3SbZl3KbLbtlN4Tw///mYgyEBgS2npmRLM75cOv0yqOJfGpLg7G7LYBAVzoBmDcIBBIIBBIIBBIIBBIIBBIIBBIIBBIIBBIIBBIIBBIIBBIIBBIIBBIIBBIIBBIIBBIIBBIIBBIIBBIIBBIIBBIIBBIIBBIIBBIIBBIIBBIIBBIIBBIIBBIIBBIIBBIIBBIIBBIIBBIIBBIIBBIIBBIIBBIIBBIIBBIIBBIIBBIIBBIIBBIIBBIIBBIIBBIIBBIIBBIIBBIIBBIIBBIIBBIIBBIIBBIIBBIIBBIIBBIIBBIIBBIIBBIIBBIIBBIIBBIIBBIIBBIIBBIIBBIIBBIIBBIIBBIIBBIIBBIIBBIIBBIIBBLGAnXQCKUEsg0HpUAgkEAgkEAgkEAgkEAgkEAgkHAS6ON1KBJ8/20SDqrFR6BV92PYWB83pHBQLy4CfbyetFk9vcnhoGJcBNosfh4314mLGAI1AmcgkPCaAx1OQcyBWsdpFbZZDKuwxPkHgZqhnToQShYBgUCinUIiAhWhnUIiAhWhnWX8+JsrwZB2CokIVATOQCDRTiERgYrQTiERgYrQTB2oYxlWBAQCiWYKiQhUhmYKiR2lxCI0s4xHoDI0U0hEoDJwBgKJZgqJCFSGZgqJCFSGhupACFSCYIGmP9hqdGQEKkJDhUQMKkFLhUQEKkBLy3gEKkBLhUQEKgBnIJBopZDYeQSF+7RSSESgQrRSSOxcosJdEAgknFZh/cxnHVlIRKBC+Am0X3+dLejzw40BgQrhJtBBnahlPAIVwk2g95e9QFGFRAQqBGcgkHASqK8BPW+P02kx3BgQqBBey/idQ99+pQvRTgJhUDht1YEQKBwEAglPgdZdfxkzC3cTBCqEk0DLrvvx/s+36EIiAoXjI9Byt3hf7s8+sct4BArH747E97/1AgUVErsvf0IUjh+mfvxvG3YGQqBSON2ReDzvRBUSu4sNiMFpEr0all/rLjGHRqBWaKQOhEClQCCQQCCQQCCQQCCQaE0gDAoGgUACgUACgUACgUACgUACgUCiDYG6q5sQQHMCYVAsCAQSCAQSCAQSCAQSCAQSCAQSCAQS7QmEQaEgEEggEEggEEggEEggEEgEC+T00l0EKkYTZ6Du5o/gCQKBBAKBBAKBBAKBBAKBBAKBBAKBRIsCYVAgCAQSCAQSCAQSCAQSCAQSCAQSTQqEQXG0INBlLAQKA4FAAoFAAoFAAoFAAoFAAoFAok2BMCgMBAIJJ4E+Xofvnx5f/y2Guw0CFcRHoFV3eF38ugt4bzwCFcRFoI/Xkzarpzc53D0QqCAuAm0WP4+b68RFDIEagTMQSHjNgQ6noMeeA9WRhS9Oq7DNYliFJc4/7gLVceyqSMKZBupAV0NVceyqSMIZBHKkiiScaaCQiEAlaaCQiEAlaWAZX7FAVWThSwOFxGoF6qrIwplWz0A1HDsEymrYE1pIRKCSNFBIRKCStFoHquHYIVBWw/BwCFSSVguJNRw7BMpq2FO+kFjDsUOgrIZblvGnFCpIwptWC4k1GIRAWQ23dZyBKjh4CJTVsCeykJiKVP7gdTUk4c38C4kIVJT514EQqCjBAjm8M7VagboaknBn/oVEBCrK/AuJCFSU+S/jk5FKHzwEymu4DS4kIlBROAO5gUB5DXtqKCQWP3gIlNdwTwWFxOIHD4HyGkaHS0cqfPQQKK9hdLiqBSqdgz9Oq7B+5rMuW0gsfvAQKK/h9iDQfv11tqDPD3cbBCqKm0AHdQou40sfPQTKa7gdBHp/2QtUsJBY+ughUF7DbewZ6FagokevK59CBE4C9TWg5+1xOi2GuwkClcVrGb9z6NuvdCE6RqCihw+BMhsGh0OgsiCQFwiU2XDPajcHGibR3quw24EKHj8EymzYs9rNfzaLfhaNQI3jeD/Qx+tuCf/oAjVvkOsdicunNwQql0EIvnckLp8LC1Tw+CFQZsOeozabRerzeARqBLdV2HAR+3hFoLZpuw6EQO60LlCxA9h9+bNVEMgJBMptGBwOgcoyd4Huxyl0BBEot2FsOAQqDAI5gUDJhv1dhqsbXzq17VeOU1ig1g3KEGj59Pb+8rxdPof0q8cpcwQRKNWw/6R03f1Mft/CuF89DgJ5kifQcidP6mNS4371OAjkSc4l7HmzeHob7hfz71ePg0CeZE2iu2+/Pl4lfyIFKnMIESi3YWw4BCpMxhzor1/7P2cziUYgT/IFms0kusgh7K5sNclUgZafz5pPfenUtl+LOAWOIQIlGx7PQEH9WsRBID8eYRJdVqDGDXoIgQocQwS63nCz+HF8gm/6+Yem/ZqEQSA3Zn4GQqDSIJAPCJRsOMdLWPxBRKB7DbVCNAK1Qv4lrIobyhCoNPkCGX8WljfMCFSafIGyPgtLv3TXV6Dwo4hA9xpa31CGQPMkfxVm/K2MtgTqEtvtUU8dKKuD8TvFHsYu+UNrTBfo7IWopv0ikHW/dfV4dglLvMFJ7BeBLPq9XJ149zi9oVhCTPWLQDb9BitUz0cZzgLFGlRIoKGnUIUeZhL9QAKFKlSPQDk9TNnlkQQKVChHoOXT240XOWX3i0Cm3QYplCHQcl9CtP9qs7NAoQaVEehLRyEK5S/jzb9YiECmve7/wr/r/EKi+RcLEci019r6/Gw4PIX+/cX6i4UIZNprbX2eNXx/6br+jajW/U7//aftUewjhaCOi3zmVtEyviGBvs5mi/RaWacIlN8TAv3ZcLPont6W5nUgBLLttbJOzz5M/fZr1T/izvzpHN4ClSvIlOg0iLxl/OrG21Dz+0Ugy06DyCsk9gI5PKFs8hAgUHgv2b1enIGW0k3RCOTdaRDZc6DjSy0t+/UWKGyMSwhUxp/cVZhLIRGBDPuMoqY6kL8PCFSu28uG/70xif54vXPbKwI59xnFZIFWByuSL/QeGh2KRMn7zq736z4pLlTSC+i2kD+TBdrNoA93JN64JfHsq2OrxFoNgZy7jGKiQPtXZGwWP1c3J9FnXx1LVYuaFuiiFwQ6Ntx/gPHx+o/u5v2sj34GQqBkw+Hcsrx3R/2pSPSYc6ACApXyJ1Ogu0Xou4/wKCRQoQURAn0RSHtX2I1+p43DwwmUjoNAE9PJaJ27i0EnCDRVoLxCIgLdC5wKVMyf6QJ9PuXQoZDoL1DIUCOQ0nArLOMR6F5gk3GzxEWg7EIiAt2L+xgC5Z+Bpo3EbAQy6jUpUDl/fATKLiQGCFSmKmwm0PVIzQmUW0ic1k3esCGQKU4CZYdDoHtxr4VCoKxuahXoSg++AhX0x0ug3EJigED+w41AUsOe7ELipH4eUyC3C2QetS3jEehu3AcQKL+QiEAj4n4NVtIfzkAOIJDUsCe/kBggkPuAI5DUcE92IRGBRsTtEn9fgtrqQFM6mpFAJn0mBCrqT7RA6XemZnT0sAL9Ga1JgbILiRECeQ85AkkNe4RCIgKNiNu6QMoyHoHGhO2u/3UBqiskItCYsI0LJJ2BRvckjJzroF8NbixQ6nIWT3WFRAQaFbdxgYRCIgKNipsqKoZTXyERgUbFTX2uEc1jCuQ67AikNdweniLUP8Qsp5DYpkAGPXZXf2xXoP3662xBPz7cyK4eTKCvATqbsCpuAh3UyVjGI9CoAK0L9P6yF2h6IRGBRobtTMKqPOgZyHPgEUhruD1WgZ63x+n0xHAINC5AV4E/bsv4nUPffqUL0QhkELZpgaRw4/pCIASS+tIychv6RGAHgbbJ500FgkDWRApU3h8EMsdJIK8PSFQcV2E374rWBRIHD4Fs8DkD3XwX1P1wEQK5DX4qbq3CizhdwvZv9ckPN6YzBKoCrznQ+s47eRHIKGxpqpxEI5D57m48rkBehwSBxIYW4RDIenc3EMgaH4Fq9adSgcb0hkBV8MACOR0UBBIbmoRDINO9HZmtQAb5uByUZFAEiuw3RCCXo4JAakOTcA0KpPWGQBPD3e0OgeoAgYxBILWhTThZMJMsTEMqnVXrDwJZg0BqQ5twCGS2ry+PLZDDgUEgtaFROP3TVpM0DCMiUGi/CGS1ry8PLpD9kUEgtaFROASy2teXagW63eLBBKrXn5kKZJeM9aHxyRqBMsLFCBT5eyFQaL8IZLGnO/UKdKsJAlXDwwtk/IshkNzQLJzPgtg3GALpDe3CJdsgUD0ECzTipbsjuow75qbBECi4XwRSdwxgjgIVSMUkGAJF95tohEAVgUBxRQEEiu63MYGyO0KgzHAIpO0XQdUCXW9lP5xRH+4jUHS/CCTtFwECmUZ0EahmfyoX6Gozh/E0C4lAekPTcAiUv1sM8xPIYziDBMrsB4HywyFQ9l5BVC7QlXYuw2kV9F6crH4QSAiHQAgkhbto5zOaCJRL7QJdNHQaTaOwd8Pk9INAlv0+nkBV+4NAtmHvh5neEQKZ9us1nCZxRwRBoOB+v7R0G00EygOBLAOPCTK5IwTSwiFQRiJxIJBlZAQyaGgerkv+YEqUQJM7QiAxXJfYNqZWger2B4FMY48LMa0jBJLDdVc3zUGgHBDIMjYCGTS0D9dd2fJAjz4ywqSOHlOgj9fhIS7ffxuEQ6CK8RFo1f0YNtbHDSlcd7HhQphAuRfwGnER6OP1pM3q6U0Oh0AV4yLQZvHzuLlOXMRqFEgO7zKYjyiQ9Rno2Np7LMMEcmlZBq850OEUZDMHQqB6cVqFbRbDKixx/qlUILWD3A/4jGIWYQ51IASqmHkIdGiOQPUxh0LisXnAWGpdeCyuHlMg40IiAtXLPJbxCFQtsygkHto3JZDLJ/cFmMkZqG8fMpZSJwhk0bDHupDYokDjWj+oQNaFxP0OCFQjM6kDhQkk9YJAFg2dws1AoJyFgXXMcGZSSNztEDSUCDSNmRQSs/bIIlCgMTs8pkAOy/i4oczvB4FMGm5vFRInvTO1DIEC3d+j3mE6Mp8zUBSRAt2d2dU7TEfmUkgMJDO1zLPq7Z0qHqYDsykkxpF1Ism/Jt/cseJhOjCbOlAcU28UUCd0t3aveJgOINAFE1IzWg2kY1Q8TAdmU0gMZPStOma/RDJQzcM0MJ9CYhwjc7P8FVIu1jxMAyzjLykgUCJazaN0ILiQmBUunCKfk1+LV/UoDXAGukKZGy2uXMaqHqUBColXKPUx+UXMqkdpgELiNUp9ytl9xaMTW6gDXeN+dnXnHwgCXQOBRuO0CutnPuu5FhKbuM0iCj+B9uuvswV9frgC3Euv8vQDcRPooM4sl/F306s8+0jcBHp/2Qs0y0IiAo2HM9B1Zn6XThxOAvU1jOftcTothisBAo3Eaxm/c+jbr3QhuvpjcCu/2nMPhTrQdWZ9l2AkCJRgzncJRoJACWZ8k2AoCJQAgcaBQClme5NpLAiUAoFGgUAprmdYf97BIFCSud7mHgsCJZnpXe7BIFASBBoDAiW5kuIMso4GgdLM8ms20SBQmouvRcwh6WgQ6DZ/fL9mLklHgkDjmMm3tOJBIJBAIJBAIJBAIJBAIJBAIJBAIJBAIJBAIJBAIJBAIJBAIJBAIJBAIJAoJhA0QiGBCvRnHvERU8wPiED+AWeQIgLVHHAGKSJQzQFnkCIC1RxwBikiUM0BZ5AiAtUccAYpIlDNAWeQIgLVHHAGKc5HIGgMBAIJBAIJBAIJBAIJBAIJBAIJBAIJBAIJBAIJBAIJBAIJBAIJf4He/75/xfyq61/XO2x0w7vnj39jFfHzrdJ6wGHDMsX9Rl6KH6+7nX78kdDlhlHAqRm6C7RZfO/HcrnL7v1ld5hX+7c+7zbW/UbO4UlGfP9b1sG+CHjaMEvxtJGV4sfrbvdVf1BPCV1uWAWcmqG3QDux+7EcXjS/enr7eO3lXj7vfokfw4ZZxO16f9TkgGeRjVI8beSluFdvu/r++5TQ5YZVwMkZOgu07n7sMxr+kez+ezrcp1/CLOJ2lXH1uhLwtGGW4mkjM8Uh6llClxtWASdn6D8HOh/L3YXmeMEZTpVZ/yITEbfLfxyv7FLA04ZZip+5Zqe4++12h/mY0OWGVcDJGQYJdDB8P/cZZmuf/yqtIm4Wu2vEdplxeP4MeNowS/G0kZ9if1q7ckpTUrwacHKGQQIdppH9v8Hdj+8vP2SBLiOe/08t4GHDMMXjRn6KxymvlUCJgJMzjBJou9xNLP/z19lVV7w+XEYc/ufwoxLwM7JVimcbmSmu91cVw0tYKuDkDMME6nn/+295hpqOePibjIXynwFPG2Ypft2YnOJqmJXYTaKTASdnGCrQbiE7ZLo+W0GaRTxtiAFPG2YpXuY6LdrqcPGzWsbfCDg5wyCBNovjFfc0Y8mu0iUj7scxexJ9CvgZ2SrFs1xzUjyb4NkUEm8FnJph1Bmor5APv+fyuExc5X5OkIy4PH5KogX8jGyV4p+5Tk1xNTwzrA9w+WlLToo3A07MkA9TQQKBQAKBQAKBQAKBQAKBQAKBQAKBQAKBQAKBQAKBQAKBQAKBQAKBQAKBQAKBQAKBQAKBQAKBQAKBQAKBQAKBQAKBQAKBQAKBQAKBQAKBQAKB7nJ45Or7S/7zDRsGge4zPIwp70mWzYNAI+gfIDM8qhe+gkAj6J+nM5yAVl+eJLP561/dY5+ZEGgMy+//GZ4Vvn9Y5uFZVqv9o6OOzx97VBBoDO8vXS/KcBlbf/+96Z+X2T8NjgsbAo1ieKjg8Cy5wyNM1/01bLPIeSJaSyDQKI7Pmh/42c+Fvv/7BYEQaCRfnyW8f/MOAm0RaCTrw7Myz581v+YStkWgkRzOPav9g3CHp6RvFrsFPQIh0CiOF6++DtSfffYPxV327yZBIAABBAIJBAIJBAIJBAIJBAIJBAIJBAIJBAIJBAIJBAIJBAIJBAIJBAIJBAIJBAIJBAIJBAIJBAIJBAIJBAIJBAIJBAIJBAKJ/wObJYEVJmHmmAAAAABJRU5ErkJggg==" /><!-- --></p>
+<p>We believe that the stock-recruit relationship follows a Ricker
+curve, where the recruits <span class="math inline">\(R_i\)</span>, in
+year <span class="math inline">\(i\)</span>, are from the matching
+brood-year spawners <span class="math inline">\(S_i\)</span>, where
+there is some random noise on the observed relationship <span class="math inline">\(\epsilon_i\)</span>, <span class="math display">\[
+  R_i = \alpha S_i \text{exp}(-\beta S_i) \text{exp}(\epsilon_i)
+\]</span> Assuming white noise on the log scale, <span class="math inline">\(\epsilon \sim \mathcal{N}(0,\sigma^2)\)</span>,
+where <span class="math inline">\(\sigma^2\)</span> is the variance
+term. The relationship between spawners and recruits is then linear on
+the log-scale, <span class="math display">\[
+  \text{log}(R_i) = \text{log}(\alpha) + \text{log}(S_i) - \beta S_i +
+\epsilon_i.
+\]</span> If we define, <span class="math inline">\(Y_i =
+R_i/S_i\)</span> We may also write this relationship as, <span class="math display">\[
+  \text{log}(Y_i) = y_i \sim \mathcal{N}(\mu_i, \sigma^2)\\
+  \mu_i = \text{log}(\alpha) - \beta S_i
+\]</span> We can see that this becomes a classic linear model between
+the mean at the log-scale, and the number of spawners. To model these
+data we want to build what is called the “likelihood”, which is the
+joint probability density of the observations given the parameter
+values, viewed as the probability of the data for a set of parameter
+values, <span class="math inline">\((\alpha, \beta, \sigma)\)</span>.
+For a Normal distribution, we can write a single observation as <span class="math display">\[
+  f(y_i) =
+\frac{1}{\sqrt{2\pi}\sigma}\text{exp}\Big(\frac{-(y_i-\mu_i)^2}{2\sigma^2}\Big).
+\]</span> By assuming independence, the joint density can be written as
+the product of the individual <span class="math inline">\(n\)</span>
+observations, <span class="math display">\[
+  f(y_1,\ldots,y_n) = \prod_{i=1}^n f(y_i).
+\]</span> The likelihood is then defined as, <span class="math display">\[
+  L(\alpha, \beta, \sigma) = f(y_1,\ldots,y_n).
+\]</span> Given that the likelihood is generally defined as a product of
+probabilities, the value tends to become very small making computation
+challenging. Instead, we tend to prefer to work with the log-likelihood,
+<span class="math display">\[
+  l(\alpha, \beta, \sigma) = \text{log}(\alpha, \beta)\\
+                   = \sum_{i=1}^n \text{log}\{f(y_i)\}.
+\]</span> In pseudo-code, we want to write this as,</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>  logLik <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>  <span class="cf">for</span>( i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n ) logLik <span class="ot">&lt;-</span> logLik <span class="sc">+</span> <span class="fu">f</span>(y[i])</span></code></pre></div>
+<p>We can fit this model using standard linear models in R,</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>  ChinookKR<span class="sc">$</span>Y <span class="ot">&lt;-</span> ChinookKR<span class="sc">$</span>recruits<span class="sc">/</span>ChinookKR<span class="sc">$</span>spawners</span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>  ChinookKR<span class="sc">$</span>y <span class="ot">&lt;-</span> <span class="fu">log</span>(ChinookKR<span class="sc">$</span>Y)</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>  fit.lm <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> spawners, <span class="at">data =</span> ChinookKR)</span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>  <span class="fu">summary</span>(fit.lm)</span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a><span class="co">#&gt; Call:</span></span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a><span class="co">#&gt; lm(formula = y ~ spawners, data = ChinookKR)</span></span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a><span class="co">#&gt; Residuals:</span></span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a><span class="co">#&gt;      Min       1Q   Median       3Q      Max </span></span>
+<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a><span class="co">#&gt; -2.03451 -0.62571  0.06578  0.64158  1.26942 </span></span>
+<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a><span class="co">#&gt; Coefficients:</span></span>
+<span id="cb4-14"><a href="#cb4-14" tabindex="-1"></a><span class="co">#&gt;               Estimate Std. Error t value Pr(&gt;|t|)    </span></span>
+<span id="cb4-15"><a href="#cb4-15" tabindex="-1"></a><span class="co">#&gt; (Intercept)  2.143e+00  3.079e-01   6.962 9.31e-07 ***</span></span>
+<span id="cb4-16"><a href="#cb4-16" tabindex="-1"></a><span class="co">#&gt; spawners    -2.517e-05  5.018e-06  -5.016 6.63e-05 ***</span></span>
+<span id="cb4-17"><a href="#cb4-17" tabindex="-1"></a><span class="co">#&gt; ---</span></span>
+<span id="cb4-18"><a href="#cb4-18" tabindex="-1"></a><span class="co">#&gt; Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</span></span>
+<span id="cb4-19"><a href="#cb4-19" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-20"><a href="#cb4-20" tabindex="-1"></a><span class="co">#&gt; Residual standard error: 0.9005 on 20 degrees of freedom</span></span>
+<span id="cb4-21"><a href="#cb4-21" tabindex="-1"></a><span class="co">#&gt;   (5 observations deleted due to missingness)</span></span>
+<span id="cb4-22"><a href="#cb4-22" tabindex="-1"></a><span class="co">#&gt; Multiple R-squared:  0.5571, Adjusted R-squared:  0.535 </span></span>
+<span id="cb4-23"><a href="#cb4-23" tabindex="-1"></a><span class="co">#&gt; F-statistic: 25.16 on 1 and 20 DF,  p-value: 6.625e-05</span></span></code></pre></div>
+<p>Here the intercept term is <span class="math inline">\(\text{log}(\alpha)\)</span>, and <span class="math inline">\(-\beta\)</span> is called logS. Note that in our
+model <span class="math inline">\(\beta &gt; 0\)</span>. In this case we
+are not able to add that resctriction directly to the model, or I don’t
+know how!</p>
+</div>
+<div id="lm-in-rtmb" class="section level2">
+<h2>LM in RTMB</h2>
+<p>We will now manually build the model as an R function. Specifically
+for <code>RTMB</code> notation we will make the data in the global
+environment and pass the parameters to the model as a named separate
+list. Note that we will generally work with the negative log-likelihood
+as the standard optimzation algorithms find the minimum, which is the
+same as the maximum of the negative function. Note that in theory we
+want to make sure that we are doing optimization over values that are
+defined on theh real line, <span class="math inline">\((-\infty,
+\infty)\)</span>, but to follow <code>lm</code>, we will keep <span class="math inline">\(\beta\)</span> on the positive scale. This
+shouldn’t be a major issue if the value is away from zero, but can cause
+issues and is bad practice.</p>
+<p>Please run the following code and compare the results with the
+<code>lm</code> fit.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>pars <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>pars<span class="sc">$</span>logalpha <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>pars<span class="sc">$</span>beta <span class="ot">&lt;-</span> <span class="dv">2</span></span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>pars<span class="sc">$</span>logSD <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a></span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a>negLogLik <span class="ot">&lt;-</span> <span class="cf">function</span>(pars){</span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a>  <span class="fu">getAll</span>(pars)  <span class="do">## attached pars locally in RTMB.</span></span>
+<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a>  sd <span class="ot">&lt;-</span> <span class="fu">exp</span>(logSD)</span>
+<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a>  </span>
+<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a>  <span class="do">## Define negative log likelihood</span></span>
+<span id="cb5-11"><a href="#cb5-11" tabindex="-1"></a>  negLL <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb5-12"><a href="#cb5-12" tabindex="-1"></a>  </span>
+<span id="cb5-13"><a href="#cb5-13" tabindex="-1"></a>  <span class="do">## NA values to check for.</span></span>
+<span id="cb5-14"><a href="#cb5-14" tabindex="-1"></a>  chin <span class="ot">&lt;-</span> ChinookKR[<span class="sc">!</span><span class="fu">is.na</span>(ChinookKR<span class="sc">$</span>recruits),]</span>
+<span id="cb5-15"><a href="#cb5-15" tabindex="-1"></a>  </span>
+<span id="cb5-16"><a href="#cb5-16" tabindex="-1"></a>  n <span class="ot">&lt;-</span> <span class="fu">nrow</span>(chin)</span>
+<span id="cb5-17"><a href="#cb5-17" tabindex="-1"></a>  <span class="do">## Mean relationship:</span></span>
+<span id="cb5-18"><a href="#cb5-18" tabindex="-1"></a>  mu <span class="ot">&lt;-</span> logalpha <span class="sc">-</span> beta<span class="sc">*</span>chin<span class="sc">$</span>spawners</span>
+<span id="cb5-19"><a href="#cb5-19" tabindex="-1"></a>  </span>
+<span id="cb5-20"><a href="#cb5-20" tabindex="-1"></a>  <span class="fu">ADREPORT</span>(sd)  <span class="do">## report standard deviation on the real scale with se.</span></span>
+<span id="cb5-21"><a href="#cb5-21" tabindex="-1"></a>  </span>
+<span id="cb5-22"><a href="#cb5-22" tabindex="-1"></a>  <span class="cf">for</span>( i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n ) negLL <span class="ot">&lt;-</span> negLL <span class="sc">-</span> <span class="fu">dnorm</span>(chin<span class="sc">$</span>y[i], mu[i], <span class="at">sd =</span> sd, <span class="at">log =</span> <span class="cn">TRUE</span>) </span>
+<span id="cb5-23"><a href="#cb5-23" tabindex="-1"></a>  <span class="do">## negLL &lt;- -sum(dnorm(chin$y, mu, sd = sd, log = TRUE))  ## Alternatively.</span></span>
+<span id="cb5-24"><a href="#cb5-24" tabindex="-1"></a>  <span class="fu">return</span>(negLL)</span>
+<span id="cb5-25"><a href="#cb5-25" tabindex="-1"></a>}</span>
+<span id="cb5-26"><a href="#cb5-26" tabindex="-1"></a></span>
+<span id="cb5-27"><a href="#cb5-27" tabindex="-1"></a><span class="fu">negLogLik</span>(pars)</span>
+<span id="cb5-28"><a href="#cb5-28" tabindex="-1"></a><span class="co">#&gt; [1] 165625341655</span></span>
+<span id="cb5-29"><a href="#cb5-29" tabindex="-1"></a><span class="do">## Create RTMB function:</span></span>
+<span id="cb5-30"><a href="#cb5-30" tabindex="-1"></a>obj <span class="ot">&lt;-</span> <span class="fu">MakeADFun</span>(negLogLik, pars, <span class="at">silent=</span><span class="cn">TRUE</span>)</span>
+<span id="cb5-31"><a href="#cb5-31" tabindex="-1"></a>obj<span class="sc">$</span><span class="fu">fn</span>()  <span class="do">## same thing but it&#39;s actually running in C++!</span></span>
+<span id="cb5-32"><a href="#cb5-32" tabindex="-1"></a><span class="co">#&gt; [1] 165625341655</span></span>
+<span id="cb5-33"><a href="#cb5-33" tabindex="-1"></a></span>
+<span id="cb5-34"><a href="#cb5-34" tabindex="-1"></a><span class="do">## Now optimize the likelihood:</span></span>
+<span id="cb5-35"><a href="#cb5-35" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">optim</span>(pars, obj<span class="sc">$</span>fn)</span>
+<span id="cb5-36"><a href="#cb5-36" tabindex="-1"></a>fit<span class="sc">$</span>par <span class="do">## Looks like it fit... but did it?</span></span>
+<span id="cb5-37"><a href="#cb5-37" tabindex="-1"></a><span class="co">#&gt;     logalpha         beta        logSD </span></span>
+<span id="cb5-38"><a href="#cb5-38" tabindex="-1"></a><span class="co">#&gt; 0.3837218729 0.0006844452 1.1987593664</span></span>
+<span id="cb5-39"><a href="#cb5-39" tabindex="-1"></a></span>
+<span id="cb5-40"><a href="#cb5-40" tabindex="-1"></a><span class="do">## It&#39;s easier to do optimization if we know the gradients. With RTMB we do!</span></span>
+<span id="cb5-41"><a href="#cb5-41" tabindex="-1"></a>fit2 <span class="ot">&lt;-</span> <span class="fu">optim</span>(pars, <span class="at">fn =</span> obj<span class="sc">$</span>fn, <span class="at">gr =</span> obj<span class="sc">$</span>gr, <span class="at">method =</span> <span class="st">&quot;BFGS&quot;</span>)</span>
+<span id="cb5-42"><a href="#cb5-42" tabindex="-1"></a>fit2<span class="sc">$</span>par</span>
+<span id="cb5-43"><a href="#cb5-43" tabindex="-1"></a><span class="co">#&gt;     logalpha         beta        logSD </span></span>
+<span id="cb5-44"><a href="#cb5-44" tabindex="-1"></a><span class="co">#&gt; 1.470188e+00 2.260881e-05 1.363465e-01</span></span>
+<span id="cb5-45"><a href="#cb5-45" tabindex="-1"></a></span>
+<span id="cb5-46"><a href="#cb5-46" tabindex="-1"></a>fit2<span class="sc">$</span>par <span class="sc">-</span> fit<span class="sc">$</span>par  <span class="do">## Not the same!!</span></span>
+<span id="cb5-47"><a href="#cb5-47" tabindex="-1"></a><span class="co">#&gt;      logalpha          beta         logSD </span></span>
+<span id="cb5-48"><a href="#cb5-48" tabindex="-1"></a><span class="co">#&gt;  1.0864661789 -0.0006618364 -1.0624129012</span></span>
+<span id="cb5-49"><a href="#cb5-49" tabindex="-1"></a>fit<span class="sc">$</span>value <span class="sc">&gt;</span> fit2<span class="sc">$</span>value  <span class="do">## Didn&#39;t find the min without the gradients. </span></span>
+<span id="cb5-50"><a href="#cb5-50" tabindex="-1"></a><span class="co">#&gt; [1] TRUE</span></span>
+<span id="cb5-51"><a href="#cb5-51" tabindex="-1"></a><span class="co"># value holds the neg log lik at min.</span></span>
+<span id="cb5-52"><a href="#cb5-52" tabindex="-1"></a></span>
+<span id="cb5-53"><a href="#cb5-53" tabindex="-1"></a><span class="do">## Other optimization functions totally okay:</span></span>
+<span id="cb5-54"><a href="#cb5-54" tabindex="-1"></a>opt <span class="ot">&lt;-</span> <span class="fu">nlminb</span>(<span class="at">start =</span> obj<span class="sc">$</span>par, <span class="at">objective =</span> obj<span class="sc">$</span>fn, <span class="at">gradient =</span> obj<span class="sc">$</span>gr, <span class="at">silent =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb5-55"><a href="#cb5-55" tabindex="-1"></a>opt<span class="sc">$</span>par <span class="sc">-</span> fit2<span class="sc">$</span>par  <span class="do">## Essentially the same.</span></span>
+<span id="cb5-56"><a href="#cb5-56" tabindex="-1"></a><span class="co">#&gt;      logalpha          beta         logSD </span></span>
+<span id="cb5-57"><a href="#cb5-57" tabindex="-1"></a><span class="co">#&gt;  6.731338e-01  2.561713e-06 -2.888102e-01</span></span>
+<span id="cb5-58"><a href="#cb5-58" tabindex="-1"></a></span>
+<span id="cb5-59"><a href="#cb5-59" tabindex="-1"></a><span class="do">## Did we match lm?</span></span>
+<span id="cb5-60"><a href="#cb5-60" tabindex="-1"></a>opt<span class="sc">$</span>par[<span class="st">&quot;logalpha&quot;</span>] <span class="sc">-</span> <span class="fu">coef</span>(fit.lm)[<span class="st">&quot;(Intercept)&quot;</span>] <span class="do">## Pretty much the same.</span></span>
+<span id="cb5-61"><a href="#cb5-61" tabindex="-1"></a><span class="co">#&gt;      logalpha </span></span>
+<span id="cb5-62"><a href="#cb5-62" tabindex="-1"></a><span class="co">#&gt; -3.666092e-07</span></span>
+<span id="cb5-63"><a href="#cb5-63" tabindex="-1"></a></span>
+<span id="cb5-64"><a href="#cb5-64" tabindex="-1"></a><span class="do">## Did we match lm?</span></span>
+<span id="cb5-65"><a href="#cb5-65" tabindex="-1"></a><span class="sc">-</span>opt<span class="sc">$</span>par[<span class="st">&quot;beta&quot;</span>] <span class="sc">-</span> <span class="fu">coef</span>(fit.lm)[<span class="st">&quot;spawners&quot;</span>] <span class="do">## Pretty much the same.</span></span>
+<span id="cb5-66"><a href="#cb5-66" tabindex="-1"></a><span class="co">#&gt;         beta </span></span>
+<span id="cb5-67"><a href="#cb5-67" tabindex="-1"></a><span class="co">#&gt; 5.059673e-12</span></span>
+<span id="cb5-68"><a href="#cb5-68" tabindex="-1"></a></span>
+<span id="cb5-69"><a href="#cb5-69" tabindex="-1"></a><span class="do">## Did we match lm?</span></span>
+<span id="cb5-70"><a href="#cb5-70" tabindex="-1"></a><span class="fu">exp</span>(opt<span class="sc">$</span>par[<span class="st">&quot;logSD&quot;</span>]) <span class="sc">-</span> <span class="fu">sigma</span>(fit.lm)  <span class="do">## Pretty similar...</span></span>
+<span id="cb5-71"><a href="#cb5-71" tabindex="-1"></a><span class="co">#&gt;       logSD </span></span>
+<span id="cb5-72"><a href="#cb5-72" tabindex="-1"></a><span class="co">#&gt; -0.04190658</span></span>
+<span id="cb5-73"><a href="#cb5-73" tabindex="-1"></a></span>
+<span id="cb5-74"><a href="#cb5-74" tabindex="-1"></a><span class="do">## Can get this information from an RTMB report with standard errors too!.</span></span>
+<span id="cb5-75"><a href="#cb5-75" tabindex="-1"></a>sdrep <span class="ot">&lt;-</span> <span class="fu">sdreport</span>(obj)</span>
+<span id="cb5-76"><a href="#cb5-76" tabindex="-1"></a></span>
+<span id="cb5-77"><a href="#cb5-77" tabindex="-1"></a><span class="fu">summary</span>(sdrep)</span>
+<span id="cb5-78"><a href="#cb5-78" tabindex="-1"></a><span class="co">#&gt;               Estimate   Std. Error</span></span>
+<span id="cb5-79"><a href="#cb5-79" tabindex="-1"></a><span class="co">#&gt; logalpha  2.143322e+00 2.935456e-01</span></span>
+<span id="cb5-80"><a href="#cb5-80" tabindex="-1"></a><span class="co">#&gt; beta      2.517052e-05 4.784527e-06</span></span>
+<span id="cb5-81"><a href="#cb5-81" tabindex="-1"></a><span class="co">#&gt; logSD    -1.524637e-01 1.507557e-01</span></span>
+<span id="cb5-82"><a href="#cb5-82" tabindex="-1"></a><span class="co">#&gt; sd        8.585900e-01 1.294373e-01</span></span></code></pre></div>
+<p>We see that even for this basic Ricker model, the optimzation is
+improved by using automatic differentiation.</p>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

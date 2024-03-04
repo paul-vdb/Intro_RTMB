@@ -1,0 +1,223 @@
+---
+title: "Introduction to Linear Models - RTMB"
+output:
+  rmarkdown::html_vignette:
+    toc: true
+    toc_depth: 2
+bibliography: 'refs.bib'
+csl: 'mee.csl'
+vignette: >
+  %\VignetteIndexEntry{sdmTMB model description}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  markdown: 
+    wrap: sentence
+---
+
+```{r setup, echo=FALSE, cache=FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  echo = FALSE,
+  error = FALSE,
+  message = FALSE,
+  warning = FALSE
+)
+```
+
+\newcommand{\s}{\boldsymbol{s}}
+
+```{r packageInstall, echo=FALSE, warning = FALSE}
+  library(tidyverse)
+  library(RTMB)
+```
+
+\clearpage
+
+## What is RTMB
+
+RTMB takes standard R code and compiles it through a single run of the R code, into C++ to run much quicker. The first advantage of writing a function compatible with RTMB is that you can run your function at the speed of C++ while writing functions in the style of R. A lot of the computation efficiency is done on the back end so that the user can write very basic and easy to understand R code to define their models.
+
+The bread and butter of RTMB though is Automatic Differentiation (AD). This is an algorithm available through a C++ library (TMBAD.cpp) that creates a "tape" of operations to calculate derivatives efficiently and accurately. The general alternative is to use finite differencing, which requires more time (more calls to the function to evaluate nearby points) and is less accurate. Below we show an examples using RTMB to compare with a finite difference method from the R package `pracma`. You'll see for this simple example, the finite difference method is good to approx 10^-7 while AD is accurate to nearliy computer precision at 10^-17. This accuracy begins to be really important for two things:
+* Finding minimum and maximum values (e.g. optimization).
+* Marginalizing over random effects through Laplace approximation.
+
+The second, Laplace approximation, requires an "inner" optimization step as well as the calculation of the Hessian (2nd order derivatives) to approximate an integral. We usually also do "outer" optimization as we find the maximum of the remaining fixed effect parameters of the likelihood which then requires a derivative of the Laplace approximation, which generates a 3rd order derivative. This becomes very unstable using finite differences and is why AD is so great. Before AD, a lot of packages would work out the exact derivatives for supported likelihoods to use Laplace (e.g. lmer I think).
+
+```{r, echo = TRUE}
+  pars <- list()
+  set.seed(20180222)
+  mean <- rnorm(5)
+  Sigma <- rWishart(1, 10, diag(5))[, , 1]
+  x <- MASS::mvrnorm(1, mean, Sigma)
+  
+  ## Make an RTMB compatible Normal function to take a derivative of. 
+  ## Returns negative log likelihood.
+  myMVNorm <- function(x){
+    -dmvnorm(x, mean, Sigma, log = TRUE)
+  }
+  
+  ## Define the function for 
+  
+  ## Finite difference:
+  grFD <- pracma::grad( myMVNorm, x0 = x )      ## Gradient (first order deriatives)
+  hessFD <- pracma::hessian( myMVNorm, x0 = x ) ## 2nd order partial derivatives "Hessian"
+  
+  ## Now do it with RTMB
+  obj <- MakeTape(myMVNorm, x)
+  obj(x) == myMVNorm(x)  ## Call the function and check it.
+  grADfn <- obj$jacfun()  ## Create a gradient function "jacobian"
+  grAD <- grADfn(x)       
+  hessADfn <- grADfn$jacfun()  ## Create a Hessian function
+  hessAD <- hessADfn(x)    
+
+  grFD-grAD         ## Nearly the same.
+  hessFD - hessAD   ## A little less accurate.
+  
+  ## Now let's check the true difference. 
+  ## Remember this is derivatives in terms of x, the data, of the neg log mvnorm.
+  ## Need some basic maths.
+  prec <- solve(Sigma)
+  grTrue <- t(prec%*%(x-mean))
+  hessTrue <- prec
+  
+  ## Compare them:
+  grTrue - grAD ## VERY ACCURATE!!!!!
+  grTrue - grFD ## Not as ACCURATE
+  
+  hessTrue - hessAD ## VERY ACCURATE!!!!!
+  hessTrue - hessFD ## Not as ACCURATE
+  
+```
+
+## The simple Linear Model
+
+Consider Chinook stock recruitment data from the `FSAdata` package in R from 1979-2000.
+
+```{r, echo = TRUE}
+library(FSAdata)
+data(ChinookKR)
+str(ChinookKR)
+```
+
+```{r, echo = FALSE, fig.width = 6, fig.height = 6}
+plot(ChinookKR$brood.year, ChinookKR$recruits, type = "l", xlab = "Year", ylab = "Recruits")
+```
+
+We believe that the stock-recruit relationship follows a Ricker curve, where the recruits $R_i$, in year $i$, are from the matching brood-year spawners $S_i$, where there is some random noise on the observed relationship $\epsilon_i$,
+$$
+  R_i = \alpha S_i \text{exp}(-\beta S_i) \text{exp}(\epsilon_i)
+$$
+Assuming white noise on the log scale, $\epsilon \sim \mathcal{N}(0,\sigma^2)$, where $\sigma^2$ is the variance term. The relationship between spawners and recruits is then linear on the log-scale,
+$$
+  \text{log}(R_i) = \text{log}(\alpha) + \text{log}(S_i) - \beta S_i + \epsilon_i.
+$$
+If we define, $Y_i = R_i/S_i$ We may also write this relationship as,
+$$
+  \text{log}(Y_i) = y_i \sim \mathcal{N}(\mu_i, \sigma^2)\\
+  \mu_i = \text{log}(\alpha) - \beta S_i
+$$
+We can see that this becomes a classic linear model between the mean at the log-scale, and the number of spawners. To model these data we want to build what is called the "likelihood", which is the joint probability density of the observations given the parameter values, viewed as the probability of the data for a set of parameter values, $(\alpha, \beta, \sigma)$. For a Normal distribution, we can write a single observation as
+$$
+  f(y_i) = \frac{1}{\sqrt{2\pi}\sigma}\text{exp}\Big(\frac{-(y_i-\mu_i)^2}{2\sigma^2}\Big).
+$$
+By assuming independence, the joint density can be written as the product of the individual $n$ observations,
+$$
+  f(y_1,\ldots,y_n) = \prod_{i=1}^n f(y_i).
+$$
+The likelihood is then defined as,
+$$
+  L(\alpha, \beta, \sigma) = f(y_1,\ldots,y_n).
+$$
+Given that the likelihood is generally defined as a product of probabilities, the value tends to become very small making computation challenging. Instead, we tend to prefer to work with the log-likelihood,
+$$
+  l(\alpha, \beta, \sigma) = \text{log}(\alpha, \beta)\\
+                   = \sum_{i=1}^n \text{log}\{f(y_i)\}.
+$$
+In pseudo-code, we want to write this as,
+```{r, echo = TRUE, eval = FALSE}
+  logLik <- 0
+  for( i in 1:n ) logLik <- logLik + f(y[i])
+```
+
+We can fit this model using standard linear models in R,
+```{r, echo = TRUE}
+  ChinookKR$Y <- ChinookKR$recruits/ChinookKR$spawners
+  ChinookKR$y <- log(ChinookKR$Y)
+  fit.lm <- lm(y ~ spawners, data = ChinookKR)
+  summary(fit.lm)
+```
+Here the intercept term is $\text{log}(\alpha)$, and $-\beta$ is called logS. Note that in our model $\beta > 0$. In this case we are not able to add that resctriction directly to the model, or I don't know how!
+
+## LM in RTMB
+
+We will now manually build the model as an R function. Specifically for `RTMB` notation we will make the data in the global environment and pass the parameters to the model as a named separate list. Note that we will generally work with the negative log-likelihood as the standard optimzation algorithms find the minimum, which is the same as the maximum of the negative function. Note that in theory we want to make sure that we are doing optimization over values that are defined on theh real line, $(-\infty, \infty)$, but to follow `lm`, we will keep $\beta$ on the positive scale. This shouldn't be a major issue if the value is away from zero, but can cause issues and is bad practice.
+
+Please run the following code and compare the results with the `lm` fit.
+
+```{r, echo = TRUE}
+pars <- list()
+pars$logalpha <- 0
+pars$beta <- 2
+pars$logSD <- 0
+
+negLogLik <- function(pars){
+  getAll(pars)  ## attached pars locally in RTMB.
+  sd <- exp(logSD)
+  
+  ## Define negative log likelihood
+  negLL <- 0
+  
+  ## NA values to check for.
+  chin <- ChinookKR[!is.na(ChinookKR$recruits),]
+  
+  n <- nrow(chin)
+  ## Mean relationship:
+  mu <- logalpha - beta*chin$spawners
+  
+  ADREPORT(sd)  ## report standard deviation on the real scale with se.
+  
+  for( i in 1:n ) negLL <- negLL - dnorm(chin$y[i], mu[i], sd = sd, log = TRUE) 
+  ## negLL <- -sum(dnorm(chin$y, mu, sd = sd, log = TRUE))  ## Alternatively.
+  return(negLL)
+}
+
+negLogLik(pars)
+## Create RTMB function:
+obj <- MakeADFun(negLogLik, pars, silent=TRUE)
+obj$fn()  ## same thing but it's actually running in C++!
+
+## Now optimize the likelihood:
+fit <- optim(pars, obj$fn)
+fit$par ## Looks like it fit... but did it?
+
+## It's easier to do optimization if we know the gradients. With RTMB we do!
+fit2 <- optim(pars, fn = obj$fn, gr = obj$gr, method = "BFGS")
+fit2$par
+
+fit2$par - fit$par  ## Not the same!!
+fit$value > fit2$value  ## Didn't find the min without the gradients. 
+# value holds the neg log lik at min.
+
+## Other optimization functions totally okay:
+opt <- nlminb(start = obj$par, objective = obj$fn, gradient = obj$gr, silent = TRUE)
+opt$par - fit2$par  ## Essentially the same.
+
+## Did we match lm?
+opt$par["logalpha"] - coef(fit.lm)["(Intercept)"] ## Pretty much the same.
+
+## Did we match lm?
+-opt$par["beta"] - coef(fit.lm)["spawners"] ## Pretty much the same.
+
+## Did we match lm?
+exp(opt$par["logSD"]) - sigma(fit.lm)  ## Pretty similar...
+
+## Can get this information from an RTMB report with standard errors too!.
+sdrep <- sdreport(obj)
+
+summary(sdrep)
+
+```
+
+We see that even for this basic Ricker model, the optimzation is improved by using automatic differentiation.
