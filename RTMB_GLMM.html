@@ -344,6 +344,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <li><a href="#what-is-rtmb" id="toc-what-is-rtmb">What is RTMB</a></li>
 <li><a href="#the-simple-linear-model" id="toc-the-simple-linear-model">The simple Linear Model</a></li>
 <li><a href="#lm-in-rtmb" id="toc-lm-in-rtmb">LM in RTMB</a></li>
+<li><a href="#glmm-example" id="toc-glmm-example">GLMM Example</a></li>
 </ul>
 </div>
 
@@ -624,8 +625,45 @@ issues and is bad practice.</p>
 <span id="cb5-80"><a href="#cb5-80" tabindex="-1"></a><span class="co">#&gt; beta      2.517052e-05 4.784527e-06</span></span>
 <span id="cb5-81"><a href="#cb5-81" tabindex="-1"></a><span class="co">#&gt; logSD    -1.524637e-01 1.507557e-01</span></span>
 <span id="cb5-82"><a href="#cb5-82" tabindex="-1"></a><span class="co">#&gt; sd        8.585900e-01 1.294373e-01</span></span></code></pre></div>
-<p>We see that even for this basic Ricker model, the optimzation is
-improved by using automatic differentiation.</p>
+<p>We see that even for this basic Ricker model, the optimization is
+improved by using automatic differentiation. We build the RTMB model via
+<code>MakeADFun</code> which creates a C++ function that has automatic
+differentiation. From there we can access the function
+<code>obj$fn()</code>, the gradient <code>obj$gr()</code> and the
+Hessian <code>obj$he()</code>. The gradient is used in optimization. In
+this case, the Hessian is used when we use <code>sdReport()</code> as
+for maximum likelihood estimation, the standard error terms come from
+this.</p>
+<p>If we want to calculate the standard error from our model, then we
+calculate the Hessian <span class="math inline">\(H_{\widehat{\theta}}\)</span>, evaluated at the
+maximum likelihood estimate <span class="math inline">\(\widehat{\theta}\)</span> for all parameters. We
+then find the inverse to get the covariance matrix <span class="math inline">\(\widehat{\Sigma} =
+H_{\widehat{\theta}}^{-1}\)</span>. For the standard errors of each
+parameter estimate, we can then calculate this from the diagonal of the
+covariance matrix, <span class="math inline">\(\widehat{s}_i =
+\sqrt{\widehat{\Sigma}_{i,i}}\)</span>.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>  </span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>Hess <span class="ot">&lt;-</span> obj<span class="sc">$</span><span class="fu">he</span>(obj<span class="sc">$</span>env<span class="sc">$</span>last.par.best) <span class="do">## last.par.best is the saved best value.</span></span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>COV <span class="ot">&lt;-</span> <span class="fu">solve</span>(Hess) <span class="do">## Inverse of Hessian</span></span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>se_calculated <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(<span class="fu">diag</span>(COV))</span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a></span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a>se_reported <span class="ot">&lt;-</span> <span class="fu">do.call</span>(<span class="st">&#39;c&#39;</span>, <span class="fu">as.list</span>(sdrep,<span class="at">what=</span><span class="st">&quot;Std&quot;</span>))</span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a>se_reported</span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a><span class="co">#&gt;     logalpha         beta        logSD </span></span>
+<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a><span class="co">#&gt; 2.935456e-01 4.784527e-06 1.507557e-01</span></span>
+<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a>se_calculated</span>
+<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a><span class="co">#&gt; [1] 2.935456e-01 4.784527e-06 1.507557e-01</span></span>
+<span id="cb6-12"><a href="#cb6-12" tabindex="-1"></a></span>
+<span id="cb6-13"><a href="#cb6-13" tabindex="-1"></a><span class="do">## Does finite difference matter here?</span></span>
+<span id="cb6-14"><a href="#cb6-14" tabindex="-1"></a>HessFD <span class="ot">&lt;-</span> pracma<span class="sc">::</span><span class="fu">hessian</span>(obj<span class="sc">$</span>fn, obj<span class="sc">$</span>env<span class="sc">$</span>last.par.best)</span>
+<span id="cb6-15"><a href="#cb6-15" tabindex="-1"></a>COVFD <span class="ot">&lt;-</span> <span class="fu">solve</span>(HessFD) <span class="do">## Inverse of Hessian</span></span>
+<span id="cb6-16"><a href="#cb6-16" tabindex="-1"></a>se_finiteDiff <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(<span class="fu">diag</span>(COVFD))</span>
+<span id="cb6-17"><a href="#cb6-17" tabindex="-1"></a></span>
+<span id="cb6-18"><a href="#cb6-18" tabindex="-1"></a>se_finiteDiff <span class="sc">-</span> se_calculated</span>
+<span id="cb6-19"><a href="#cb6-19" tabindex="-1"></a><span class="co">#&gt; [1] -1.862409e-09 -1.854980e-14 -4.740623e-10</span></span></code></pre></div>
+</div>
+<div id="glmm-example" class="section level2">
+<h2>GLMM Example</h2>
 </div>
 
 

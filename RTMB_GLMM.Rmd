@@ -220,4 +220,28 @@ summary(sdrep)
 
 ```
 
-We see that even for this basic Ricker model, the optimzation is improved by using automatic differentiation.
+We see that even for this basic Ricker model, the optimization is improved by using automatic differentiation. We build the RTMB model via `MakeADFun` which creates a C++ function that has automatic differentiation. From there we can access the function `obj$fn()`, the gradient `obj$gr()` and the Hessian `obj$he()`. The gradient is used in optimization. In this case, the Hessian is used when we use `sdReport()` as for maximum likelihood estimation, the standard error terms come from this.
+
+If we want to calculate the standard error from our model, then we calculate the Hessian $H_{\widehat{\theta}}$, evaluated at the maximum likelihood estimate $\widehat{\theta}$ for all parameters. We then find the inverse to get the covariance matrix $\widehat{\Sigma} = H_{\widehat{\theta}}^{-1}$. For the standard errors of each parameter estimate, we can then calculate this from the diagonal of the covariance matrix, $\widehat{s}_i = \sqrt{\widehat{\Sigma}_{i,i}}$.
+
+```{r, echo = TRUE}
+  
+Hess <- obj$he(obj$env$last.par.best) ## last.par.best is the saved best value.
+COV <- solve(Hess) ## Inverse of Hessian
+se_calculated <- sqrt(diag(COV))
+
+se_reported <- do.call('c', as.list(sdrep, what="Std"))
+se_reported
+se_calculated
+
+## Does finite difference matter here?
+HessFD <- pracma::hessian(obj$fn, obj$env$last.par.best)
+COVFD <- solve(HessFD) ## Inverse of Hessian
+se_finiteDiff <- sqrt(diag(COVFD))
+
+se_finiteDiff - se_calculated
+```
+
+## GLMM Example
+
+
