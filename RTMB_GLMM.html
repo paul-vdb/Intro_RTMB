@@ -345,6 +345,9 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <li><a href="#the-simple-linear-model" id="toc-the-simple-linear-model">The simple Linear Model</a></li>
 <li><a href="#lm-in-rtmb" id="toc-lm-in-rtmb">LM in RTMB</a></li>
 <li><a href="#glmm-example" id="toc-glmm-example">GLMM Example</a></li>
+<li><a href="#autoregressive-variance" id="toc-autoregressive-variance">Autoregressive Variance</a></li>
+<li><a href="#autoregressive-multivariate-model" id="toc-autoregressive-multivariate-model">Autoregressive Multivariate
+Model</a></li>
 </ul>
 </div>
 
@@ -647,7 +650,7 @@ covariance matrix, <span class="math inline">\(\widehat{s}_i =
 <span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>COV <span class="ot">&lt;-</span> <span class="fu">solve</span>(Hess) <span class="do">## Inverse of Hessian</span></span>
 <span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>se_calculated <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(<span class="fu">diag</span>(COV))</span>
 <span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a></span>
-<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a>se_reported <span class="ot">&lt;-</span> <span class="fu">do.call</span>(<span class="st">&#39;c&#39;</span>, <span class="fu">as.list</span>(sdrep,<span class="at">what=</span><span class="st">&quot;Std&quot;</span>))</span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a>se_reported <span class="ot">&lt;-</span> <span class="fu">do.call</span>(<span class="st">&#39;c&#39;</span>, <span class="fu">as.list</span>(sdrep, <span class="at">what=</span><span class="st">&quot;Std&quot;</span>))</span>
 <span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a>se_reported</span>
 <span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a><span class="co">#&gt;     logalpha         beta        logSD </span></span>
 <span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a><span class="co">#&gt; 2.935456e-01 4.784527e-06 1.507557e-01</span></span>
@@ -664,6 +667,147 @@ covariance matrix, <span class="math inline">\(\widehat{s}_i =
 </div>
 <div id="glmm-example" class="section level2">
 <h2>GLMM Example</h2>
+<p>Under construction…</p>
+</div>
+<div id="autoregressive-variance" class="section level2">
+<h2>Autoregressive Variance</h2>
+<p>Consider a continuous observation <span class="math inline">\(x_t\)</span> that occurs at time <span class="math inline">\(t\)</span>. We say that given the previous
+observation, then <span class="math display">\[
+  x_t|x_{t-1} \sim \phi x_{t-1} + \epsilon_t.
+\]</span> where <span class="math inline">\(\epsilon_t \sim
+\mathcal{N}(0,\sigma^2)\)</span>.</p>
+<p>If you remember, one of the basic assumptions we require to build a
+likelihood is that the observations are independent. Here, the
+observations are linearly dependent on the previous one, but are
+conditionally independent. In many applications it is easier to write
+the likelihood as a product of conditionally independent distributions.
+We will start with <span class="math inline">\(x_1\)</span>, which is
+linearly dependent on some unobserved previous state <span class="math inline">\(x_0\)</span>. To figure out the mean and variance,
+we will do some basic algebra to work out the mean, or expected value,
+<span class="math inline">\(\mathbb{E}(x_1)\)</span>, and variance,
+<span class="math inline">\(\text{var}(x_1) = \mathbb{E}(x_1^2) -
+\mathbb{E}(x_1)^2\)</span>, can be written as,</p>
+<p><span class="math display">\[\begin{eqnarray}
+  \mathbb{E}(x_1) &amp; = &amp; \mathbb{E}(\phi x_0) +
+\mathbb{E}(\epsilon_1)\\
+                  &amp; = &amp; \phi \mathbb{E}(\phi x_0) + 0.
+\end{eqnarray}\]</span> Assuming <span class="math inline">\(\mathbb{E}(x_1^2) = \mathbb{E}(x_0^2) =
+\mathbb{E}(x^2)\)</span>, we now must figure out <span class="math display">\[\begin{eqnarray}
+  \mathbb{E}(x_1^2) &amp; = &amp; \mathbb{E}\{(\phi x_0 +
+\epsilon)^2\}\\
+                    &amp; = &amp; \mathbb{E}(\phi^2 x_0^2 + 2\phi x_0
+\epsilon + \epsilon^2)\\
+                    &amp; = &amp; \phi^2 \mathbb{E}(x_0^2) +
+2\phi  \mathbb{E}(\epsilon x_0) + \mathbb{E}(\epsilon^2)\\
+  \mathbb{E}(x_1^2) - \phi^2 \mathbb{E}(x_0^2) &amp; = &amp;
+\mathbb{E}(\epsilon^2)\\
+  (1-\phi^2) \mathbb{E}(x^2) &amp; = &amp; \mathbb{E}(\epsilon^2)\\
+  \mathbb{E}(x^2) &amp; = &amp; \frac{\mathbb{E}(\epsilon^2)}{
+(1-\phi^2) }.  
+\end{eqnarray}\]</span></p>
+<p>Using the rules of variance defined above, <span class="math display">\[
+  \mathbb{E}(\epsilon^2) = \sigma^2 +\mathbb{E}(\epsilon)^2 = \sigma^2.
+\]</span> We now know that,</p>
+<p><span class="math display">\[
+  \mathbb{E}(x^2) = \frac{\sigma^2}{ (1-\phi^2) }.  
+\]</span> Finally, assuming that <span class="math inline">\(\mu =
+0\)</span>, so that <span class="math inline">\(\mathbb{E}(x)^2 =
+0\)</span>, the first observation that comes from the limiting
+distribution is simply, <span class="math display">\[
+  x_1 \sim \mathcal{N}\Big(0, \frac{\sigma^2}{1-\phi^2}\Big).
+\]</span></p>
+<p>We can then write the joint likelihood as, <span class="math display">\[
+  L(\sigma) = f(x_1, \ldots, x_n) = f(x_1) \prod_{i=2}^n f(x_i |
+x_{i-1}).
+\]</span></p>
+</div>
+<div id="autoregressive-multivariate-model" class="section level2">
+<h2>Autoregressive Multivariate Model</h2>
+<p>We can also write the autoregressive model as a multivariate normal
+distribution. To do this we need to work out the covariance between
+<span class="math inline">\(x_t\)</span> and <span class="math inline">\(x_{t-h}\)</span>. This can be defined recursively
+if we think about the covariance in steps,</p>
+<p><span class="math display">\[\begin{eqnarray}
+  \text{cov}(x_t, x_{t-h}) &amp; = &amp; \text{cov}(\phi x_{t-1} +
+\epsilon_i, x_{t-h})\\
+                           &amp; = &amp; \mathbb{E}\{ ( \phi x_{t-1} +
+\epsilon_i ) x_{t-h}\} \\
+                           &amp; = &amp; \mathbb{E}\{ ( \phi x_{t-1}
+x_{t-h} + x_{t-h}\epsilon_i \} \\
+                           &amp; = &amp; \phi \mathbb{E} ( x_{t-1}
+x_{t-h} ) + \mathbb{E}(x_{t-h}\epsilon_i)
+                           &amp; = &amp; \phi \mathbb{E} ( x_{t-1}
+x_{t-h} ) + 0 \\
+                           &amp; = &amp; \phi
+\text{cov}(x_{t-1},x_{t-h})\\
+\end{eqnarray}\]</span></p>
+<p>We then can infer that if we eventually step recursively back to
+<span class="math inline">\(x_{t-1} = x_{t-h} = x_1\)</span>, then <span class="math inline">\(\text{cov}(x_{1},x_{1}) = \text{var}(x_{1}) =
+\frac{\sigma^2}{ (1-\phi^2) }\)</span>. As a result, we get the
+following generally,</p>
+<p><span class="math display">\[
+  \text{cov}(x_t, x_{t-h}) = \phi^{|t-j|} \frac{\sigma^2}{ (1-\phi^2) }.
+\]</span></p>
+<p>Using pseudo code to define the variance matrix,</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a>S <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>,n,n)</span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n){</span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>  <span class="cf">for</span>(j <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n){</span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a>    S[i,j] <span class="ot">&lt;-</span> sigma<span class="sc">^</span><span class="dv">2</span><span class="sc">/</span>(<span class="dv">1</span><span class="sc">-</span>phi<span class="sc">^</span><span class="dv">2</span>)<span class="sc">*</span>phi<span class="sc">^</span><span class="fu">abs</span>(i<span class="sc">-</span>j)</span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a>  }</span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a>}</span></code></pre></div>
+<p>We can then write the likelihood as, <span class="math display">\[
+  L(\sigma) = f(x_1, \ldots, x_n).
+\]</span> where <span class="math display">\[
+  x_1,\ldots,x_n \sim \mathcal{N}(\mathbf{\mu}, S),
+\]</span> where <span class="math inline">\(S\)</span> is the covariance
+matrix defined above, and mean is <span class="math inline">\(\mathbf{\mu} = (0, \ldots, 0)\)</span>. It should
+become clear that this matrix <span class="math inline">\(S\)</span> is
+a dense matrix, meaning that all elements are non-zero. However, if we
+take the inverse of a matrix that is defined this way it turns out to be
+sparse. LATER ADD MATHS HERE.</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a>phi <span class="ot">&lt;-</span> <span class="fl">0.5</span></span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>sigma <span class="ot">&lt;-</span> <span class="fl">1.5</span></span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="dv">5</span></span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a>S <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>,n,n)</span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n){</span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a>  <span class="cf">for</span>(j <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n){</span>
+<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a>    S[i,j] <span class="ot">&lt;-</span> sigma<span class="sc">^</span><span class="dv">2</span><span class="sc">/</span>(<span class="dv">1</span><span class="sc">-</span>phi<span class="sc">^</span><span class="dv">2</span>)<span class="sc">*</span>phi<span class="sc">^</span><span class="fu">abs</span>(i<span class="sc">-</span>j)</span>
+<span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a>  }</span>
+<span id="cb8-9"><a href="#cb8-9" tabindex="-1"></a>}</span>
+<span id="cb8-10"><a href="#cb8-10" tabindex="-1"></a>P <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>,n,n)</span>
+<span id="cb8-11"><a href="#cb8-11" tabindex="-1"></a><span class="fu">diag</span>(P) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="fu">rep</span>(<span class="dv">1</span><span class="sc">+</span>phi<span class="sc">^</span><span class="dv">2</span>, n<span class="dv">-2</span>), <span class="dv">1</span>)</span>
+<span id="cb8-12"><a href="#cb8-12" tabindex="-1"></a>P[<span class="fu">cbind</span>(<span class="dv">2</span><span class="sc">:</span>n,<span class="dv">1</span><span class="sc">:</span>(n<span class="dv">-1</span>))] <span class="ot">&lt;-</span> <span class="sc">-</span>phi</span>
+<span id="cb8-13"><a href="#cb8-13" tabindex="-1"></a>P[<span class="fu">cbind</span>(<span class="dv">1</span><span class="sc">:</span>(n<span class="dv">-1</span>),<span class="dv">2</span><span class="sc">:</span>n)] <span class="ot">&lt;-</span> <span class="sc">-</span>phi</span>
+<span id="cb8-14"><a href="#cb8-14" tabindex="-1"></a>P <span class="ot">&lt;-</span> P<span class="sc">*</span>sigma<span class="sc">^-</span><span class="dv">2</span></span>
+<span id="cb8-15"><a href="#cb8-15" tabindex="-1"></a>P</span>
+<span id="cb8-16"><a href="#cb8-16" tabindex="-1"></a><span class="co">#&gt;            [,1]       [,2]       [,3]       [,4]       [,5]</span></span>
+<span id="cb8-17"><a href="#cb8-17" tabindex="-1"></a><span class="co">#&gt; [1,]  0.4444444 -0.2222222  0.0000000  0.0000000  0.0000000</span></span>
+<span id="cb8-18"><a href="#cb8-18" tabindex="-1"></a><span class="co">#&gt; [2,] -0.2222222  0.5555556 -0.2222222  0.0000000  0.0000000</span></span>
+<span id="cb8-19"><a href="#cb8-19" tabindex="-1"></a><span class="co">#&gt; [3,]  0.0000000 -0.2222222  0.5555556 -0.2222222  0.0000000</span></span>
+<span id="cb8-20"><a href="#cb8-20" tabindex="-1"></a><span class="co">#&gt; [4,]  0.0000000  0.0000000 -0.2222222  0.5555556 -0.2222222</span></span>
+<span id="cb8-21"><a href="#cb8-21" tabindex="-1"></a><span class="co">#&gt; [5,]  0.0000000  0.0000000  0.0000000 -0.2222222  0.4444444</span></span>
+<span id="cb8-22"><a href="#cb8-22" tabindex="-1"></a></span>
+<span id="cb8-23"><a href="#cb8-23" tabindex="-1"></a><span class="fu">solve</span>(S)</span>
+<span id="cb8-24"><a href="#cb8-24" tabindex="-1"></a><span class="co">#&gt;            [,1]       [,2]          [,3]          [,4]       [,5]</span></span>
+<span id="cb8-25"><a href="#cb8-25" tabindex="-1"></a><span class="co">#&gt; [1,]  0.4444444 -0.2222222 -1.850372e-17 -9.251859e-18  0.0000000</span></span>
+<span id="cb8-26"><a href="#cb8-26" tabindex="-1"></a><span class="co">#&gt; [2,] -0.2222222  0.5555556 -2.222222e-01  0.000000e+00  0.0000000</span></span>
+<span id="cb8-27"><a href="#cb8-27" tabindex="-1"></a><span class="co">#&gt; [3,]  0.0000000 -0.2222222  5.555556e-01 -2.222222e-01  0.0000000</span></span>
+<span id="cb8-28"><a href="#cb8-28" tabindex="-1"></a><span class="co">#&gt; [4,]  0.0000000  0.0000000 -2.222222e-01  5.555556e-01 -0.2222222</span></span>
+<span id="cb8-29"><a href="#cb8-29" tabindex="-1"></a><span class="co">#&gt; [5,]  0.0000000  0.0000000  0.000000e+00 -2.222222e-01  0.4444444</span></span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="do">## Simulate some data:</span></span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">numeric</span>(n)</span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a>x[<span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">1</span>, <span class="dv">0</span>, <span class="at">sd=</span>sigma<span class="sc">/</span>(<span class="dv">1</span><span class="sc">-</span>phi<span class="sc">*</span>phi))</span>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a><span class="cf">for</span>( i <span class="cf">in</span> <span class="dv">2</span><span class="sc">:</span>n ) x[i] <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">1</span>, <span class="at">mean =</span> phi<span class="sc">*</span>x[i<span class="dv">-1</span>], <span class="at">sd =</span> sigma)</span>
+<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a></span>
+<span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a><span class="do">## Find the log likelihood:</span></span>
+<span id="cb9-7"><a href="#cb9-7" tabindex="-1"></a>logLik <span class="ot">&lt;-</span> <span class="fu">dnorm</span>(x[<span class="dv">1</span>], <span class="at">mean =</span> <span class="dv">0</span>, <span class="at">sd =</span> sigma<span class="sc">/</span><span class="fu">sqrt</span>(<span class="dv">1</span><span class="sc">-</span>phi<span class="sc">*</span>phi), <span class="at">log =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb9-8"><a href="#cb9-8" tabindex="-1"></a><span class="cf">for</span>( i <span class="cf">in</span> <span class="dv">2</span><span class="sc">:</span>n ) logLik <span class="ot">&lt;-</span> logLik <span class="sc">+</span> <span class="fu">dnorm</span>(x[i], <span class="at">mean =</span> phi<span class="sc">*</span>x[i<span class="dv">-1</span>], <span class="at">sd =</span> sigma, <span class="at">log =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb9-9"><a href="#cb9-9" tabindex="-1"></a></span>
+<span id="cb9-10"><a href="#cb9-10" tabindex="-1"></a><span class="do">## Find the log likelihood:</span></span>
+<span id="cb9-11"><a href="#cb9-11" tabindex="-1"></a>logLikMat <span class="ot">&lt;-</span> RTMB<span class="sc">::</span><span class="fu">dmvnorm</span>(x, <span class="at">mu =</span> <span class="fu">rep</span>(<span class="dv">0</span>,n), <span class="at">Sigma =</span> S, <span class="at">log =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb9-12"><a href="#cb9-12" tabindex="-1"></a></span>
+<span id="cb9-13"><a href="#cb9-13" tabindex="-1"></a>logLik <span class="sc">-</span> logLikMat  <span class="do">## Pretty much the same.</span></span>
+<span id="cb9-14"><a href="#cb9-14" tabindex="-1"></a><span class="co">#&gt; [1] 0</span></span></code></pre></div>
 </div>
 
 

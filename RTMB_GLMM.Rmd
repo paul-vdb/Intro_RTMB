@@ -244,4 +244,123 @@ se_finiteDiff - se_calculated
 
 ## GLMM Example
 
+Under construction...
 
+## Autoregressive Variance
+
+Consider a continuous observation $x_t$ that occurs at time $t$. We say that given the previous observation, then 
+$$
+  x_t|x_{t-1} \sim \phi x_{t-1} + \epsilon_t.
+$$
+where $\epsilon_t \sim \mathcal{N}(0,\sigma^2)$.
+
+If you remember, one of the basic assumptions we require to build a likelihood is that the observations are independent. Here, the observations are linearly dependent on the previous one, but are conditionally independent. In many applications it is easier to write the likelihood as a product of conditionally independent distributions. We will start with $x_1$, which is linearly dependent on some unobserved previous state $x_0$. To figure out the mean and variance, we will do some basic algebra to work out the mean, or expected value, $\mathbb{E}(x_1)$, and variance, $\text{var}(x_1) = \mathbb{E}(x_1^2) - \mathbb{E}(x_1)^2$, can be written as,
+
+\begin{eqnarray}
+  \mathbb{E}(x_1) & = & \mathbb{E}(\phi x_0) + \mathbb{E}(\epsilon_1)\\
+                  & = & \phi \mathbb{E}(\phi x_0) + 0.
+\end{eqnarray}
+Assuming $\mathbb{E}(x_1^2) = \mathbb{E}(x_0^2) = \mathbb{E}(x^2)$, we now must figure out
+\begin{eqnarray}
+  \mathbb{E}(x_1^2) & = & \mathbb{E}\{(\phi x_0 + \epsilon)^2\}\\
+                    & = & \mathbb{E}(\phi^2 x_0^2 + 2\phi x_0 \epsilon + \epsilon^2)\\
+                    & = & \phi^2 \mathbb{E}(x_0^2) + 2\phi  \mathbb{E}(\epsilon x_0) + \mathbb{E}(\epsilon^2)\\
+  \mathbb{E}(x_1^2) - \phi^2 \mathbb{E}(x_0^2) & = & \mathbb{E}(\epsilon^2)\\
+  (1-\phi^2) \mathbb{E}(x^2) & = & \mathbb{E}(\epsilon^2)\\
+  \mathbb{E}(x^2) & = & \frac{\mathbb{E}(\epsilon^2)}{ (1-\phi^2) }.  
+\end{eqnarray}
+
+Using the rules of variance defined above,
+$$
+  \mathbb{E}(\epsilon^2) = \sigma^2 +\mathbb{E}(\epsilon)^2 = \sigma^2.
+$$
+We now know that,
+
+$$
+  \mathbb{E}(x^2) = \frac{\sigma^2}{ (1-\phi^2) }.  
+$$
+Finally, assuming that $\mu = 0$, so that $\mathbb{E}(x)^2 = 0$, the first observation that comes from the limiting distribution is simply,
+$$
+  x_1 \sim \mathcal{N}\Big(0, \frac{\sigma^2}{1-\phi^2}\Big).
+$$
+
+We can then write the joint likelihood as,
+$$
+  L(\sigma) = f(x_1, \ldots, x_n) = f(x_1) \prod_{i=2}^n f(x_i | x_{i-1}).
+$$
+
+## Autoregressive Multivariate Model
+
+We can also write the autoregressive model as a multivariate normal distribution. To do this we need to work out the covariance between $x_t$ and $x_{t-h}$. This can be defined recursively if we think about the covariance in steps,
+
+\begin{eqnarray}
+  \text{cov}(x_t, x_{t-h}) & = & \text{cov}(\phi x_{t-1} + \epsilon_i, x_{t-h})\\
+                           & = & \mathbb{E}\{ ( \phi x_{t-1} + \epsilon_i ) x_{t-h}\} \\
+                           & = & \mathbb{E}\{ ( \phi x_{t-1} x_{t-h} + x_{t-h}\epsilon_i \} \\
+                           & = & \phi \mathbb{E} ( x_{t-1} x_{t-h} ) + \mathbb{E}(x_{t-h}\epsilon_i) 
+                           & = & \phi \mathbb{E} ( x_{t-1} x_{t-h} ) + 0 \\
+                           & = & \phi \text{cov}(x_{t-1},x_{t-h})\\
+\end{eqnarray}
+
+We then can infer that if we eventually step recursively back to $x_{t-1} = x_{t-h} = x_1$, then $\text{cov}(x_{1},x_{1}) = \text{var}(x_{1}) = \frac{\sigma^2}{ (1-\phi^2) }$. As a result, we get the following generally,
+
+$$
+  \text{cov}(x_t, x_{t-h}) = \phi^{|t-j|} \frac{\sigma^2}{ (1-\phi^2) }.
+$$
+
+Using pseudo code to define the variance matrix,
+```{r, echo = TRUE, eval = FALSE}
+S <- matrix(0,n,n)
+for(i in 1:n){
+  for(j in 1:n){
+    S[i,j] <- sigma^2/(1-phi^2)*phi^abs(i-j)
+  }
+}
+```
+
+We can then write the likelihood as,
+$$
+  L(\sigma) = f(x_1, \ldots, x_n).
+$$
+where 
+$$
+  x_1,\ldots,x_n \sim \mathcal{N}(\mathbf{\mu}, S),
+$$
+where $S$ is the covariance matrix defined above, and mean is $\mathbf{\mu} = (0, \ldots, 0)$. It should become clear that this matrix $S$ is a dense matrix, meaning that all elements are non-zero. However, if we take the inverse of a matrix that is defined this way it turns out to be sparse. LATER ADD MATHS HERE.
+
+
+```{r, echo = TRUE, eval = TRUE}
+phi <- 0.5
+sigma <- 1.5
+n <- 5
+S <- matrix(0,n,n)
+for(i in 1:n){
+  for(j in 1:n){
+    S[i,j] <- sigma^2/(1-phi^2)*phi^abs(i-j)
+  }
+}
+P <- matrix(0,n,n)
+diag(P) <- c(1, rep(1+phi^2, n-2), 1)
+P[cbind(2:n,1:(n-1))] <- -phi
+P[cbind(1:(n-1),2:n)] <- -phi
+P <- P*sigma^-2
+P
+
+solve(S)
+```
+
+```{r, echo = TRUE, eval = TRUE}
+## Simulate some data:
+x <- numeric(n)
+x[1] <- rnorm(1, 0, sd=sigma/(1-phi*phi))
+for( i in 2:n ) x[i] <- rnorm(1, mean = phi*x[i-1], sd = sigma)
+
+## Find the log likelihood:
+logLik <- dnorm(x[1], mean = 0, sd = sigma/sqrt(1-phi*phi), log = TRUE)
+for( i in 2:n ) logLik <- logLik + dnorm(x[i], mean = phi*x[i-1], sd = sigma, log = TRUE)
+
+## Find the log likelihood:
+logLikMat <- RTMB::dmvnorm(x, mu = rep(0,n), Sigma = S, log = TRUE)
+
+logLik - logLikMat  ## Pretty much the same.
+```
