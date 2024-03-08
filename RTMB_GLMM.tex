@@ -1,0 +1,631 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\usepackage[margin=1in]{geometry}
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  pdftitle={Introduction to Linear Models - RTMB},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\title{Introduction to Linear Models - RTMB}
+\author{}
+\date{\vspace{-2.5em}}
+
+\begin{document}
+\maketitle
+
+{
+\setcounter{tocdepth}{2}
+\tableofcontents
+}
+\newcommand{\s}{\boldsymbol{s}}
+
+\clearpage
+
+\hypertarget{what-is-rtmb}{%
+\subsection{What is RTMB}\label{what-is-rtmb}}
+
+RTMB takes standard R code and compiles it through a single run of the R
+code, into C++ to run much quicker. The first advantage of writing a
+function compatible with RTMB is that you can run your function at the
+speed of C++ while writing functions in the style of R. A lot of the
+computation efficiency is done on the back end so that the user can
+write very basic and easy to understand R code to define their models.
+
+The bread and butter of RTMB though is Automatic Differentiation (AD).
+This is an algorithm available through a C++ library (TMBAD.cpp) that
+creates a ``tape'' of operations to calculate derivatives efficiently
+and accurately. The general alternative is to use finite differencing,
+which requires more time (more calls to the function to evaluate nearby
+points) and is less accurate. Below we show an examples using RTMB to
+compare with a finite difference method from the R package
+\texttt{pracma}. You'll see for this simple example, the finite
+difference method is good to approx 10\^{}-7 while AD is accurate to
+nearliy computer precision at 10\^{}-17. This accuracy begins to be
+really important for two things: * Finding minimum and maximum values
+(e.g.~optimization). * Marginalizing over random effects through Laplace
+approximation.
+
+The second, Laplace approximation, requires an ``inner'' optimization
+step as well as the calculation of the Hessian (2nd order derivatives)
+to approximate an integral. We usually also do ``outer'' optimization as
+we find the maximum of the remaining fixed effect parameters of the
+likelihood which then requires a derivative of the Laplace
+approximation, which generates a 3rd order derivative. This becomes very
+unstable using finite differences and is why AD is so great. Before AD,
+a lot of packages would work out the exact derivatives for supported
+likelihoods to use Laplace (e.g.~lmer I think).
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{  pars }\OtherTok{\textless{}{-}} \FunctionTok{list}\NormalTok{()}
+  \FunctionTok{set.seed}\NormalTok{(}\DecValTok{20180222}\NormalTok{)}
+\NormalTok{  mean }\OtherTok{\textless{}{-}} \FunctionTok{rnorm}\NormalTok{(}\DecValTok{5}\NormalTok{)}
+\NormalTok{  Sigma }\OtherTok{\textless{}{-}} \FunctionTok{rWishart}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{10}\NormalTok{, }\FunctionTok{diag}\NormalTok{(}\DecValTok{5}\NormalTok{))[, , }\DecValTok{1}\NormalTok{]}
+\NormalTok{  x }\OtherTok{\textless{}{-}}\NormalTok{ MASS}\SpecialCharTok{::}\FunctionTok{mvrnorm}\NormalTok{(}\DecValTok{1}\NormalTok{, mean, Sigma)}
+  
+  \DocumentationTok{\#\# Make an RTMB compatible Normal function to take a derivative of. }
+  \DocumentationTok{\#\# Returns negative log likelihood.}
+\NormalTok{  myMVNorm }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(x)\{}
+    \SpecialCharTok{{-}}\FunctionTok{dmvnorm}\NormalTok{(x, mean, Sigma, }\AttributeTok{log =} \ConstantTok{TRUE}\NormalTok{)}
+\NormalTok{  \}}
+  
+  \DocumentationTok{\#\# Define the function for }
+  
+  \DocumentationTok{\#\# Finite difference:}
+\NormalTok{  grFD }\OtherTok{\textless{}{-}}\NormalTok{ pracma}\SpecialCharTok{::}\FunctionTok{grad}\NormalTok{( myMVNorm, }\AttributeTok{x0 =}\NormalTok{ x )      }\DocumentationTok{\#\# Gradient (first order deriatives)}
+\NormalTok{  hessFD }\OtherTok{\textless{}{-}}\NormalTok{ pracma}\SpecialCharTok{::}\FunctionTok{hessian}\NormalTok{( myMVNorm, }\AttributeTok{x0 =}\NormalTok{ x ) }\DocumentationTok{\#\# 2nd order partial derivatives "Hessian"}
+  
+  \DocumentationTok{\#\# Now do it with RTMB}
+\NormalTok{  obj }\OtherTok{\textless{}{-}} \FunctionTok{MakeTape}\NormalTok{(myMVNorm, x)}
+  \FunctionTok{obj}\NormalTok{(x) }\SpecialCharTok{==} \FunctionTok{myMVNorm}\NormalTok{(x)  }\DocumentationTok{\#\# Call the function and check it.}
+\CommentTok{\#\textgreater{} [1] TRUE}
+\NormalTok{  grADfn }\OtherTok{\textless{}{-}}\NormalTok{ obj}\SpecialCharTok{$}\FunctionTok{jacfun}\NormalTok{()  }\DocumentationTok{\#\# Create a gradient function "jacobian"}
+\NormalTok{  grAD }\OtherTok{\textless{}{-}} \FunctionTok{grADfn}\NormalTok{(x)       }
+\NormalTok{  hessADfn }\OtherTok{\textless{}{-}}\NormalTok{ grADfn}\SpecialCharTok{$}\FunctionTok{jacfun}\NormalTok{()  }\DocumentationTok{\#\# Create a Hessian function}
+\NormalTok{  hessAD }\OtherTok{\textless{}{-}} \FunctionTok{hessADfn}\NormalTok{(x)    }
+
+\NormalTok{  grFD}\SpecialCharTok{{-}}\NormalTok{grAD         }\DocumentationTok{\#\# Nearly the same.}
+\CommentTok{\#\textgreater{}               [,1]          [,2]         [,3]          [,4]          [,5]}
+\CommentTok{\#\textgreater{} [1,] {-}1.442579e{-}11 {-}1.295703e{-}10 6.217389e{-}11 {-}2.828959e{-}11 {-}5.600864e{-}11}
+\NormalTok{  hessFD }\SpecialCharTok{{-}}\NormalTok{ hessAD   }\DocumentationTok{\#\# A little less accurate.}
+\CommentTok{\#\textgreater{}               [,1]          [,2]          [,3]          [,4]          [,5]}
+\CommentTok{\#\textgreater{} [1,]  1.136814e{-}07 {-}1.203314e{-}08 {-}1.702587e{-}08  6.127848e{-}09 {-}1.309743e{-}08}
+\CommentTok{\#\textgreater{} [2,] {-}1.203314e{-}08  2.088005e{-}07 {-}6.800355e{-}09 {-}2.036351e{-}08 {-}1.284167e{-}08}
+\CommentTok{\#\textgreater{} [3,] {-}1.702587e{-}08 {-}6.800355e{-}09  2.055042e{-}07 {-}1.003181e{-}08  1.138950e{-}08}
+\CommentTok{\#\textgreater{} [4,]  6.127848e{-}09 {-}2.036351e{-}08 {-}1.003181e{-}08  1.904034e{-}07 {-}7.260621e{-}09}
+\CommentTok{\#\textgreater{} [5,] {-}1.309743e{-}08 {-}1.284167e{-}08  1.138950e{-}08 {-}7.260621e{-}09  4.528078e{-}08}
+  
+  \DocumentationTok{\#\# Now let\textquotesingle{}s check the true difference. }
+  \DocumentationTok{\#\# Remember this is derivatives in terms of x, the data, of the neg log mvnorm.}
+  \DocumentationTok{\#\# Need some basic maths.}
+\NormalTok{  prec }\OtherTok{\textless{}{-}} \FunctionTok{solve}\NormalTok{(Sigma)}
+\NormalTok{  grTrue }\OtherTok{\textless{}{-}} \FunctionTok{t}\NormalTok{(prec}\SpecialCharTok{\%*\%}\NormalTok{(x}\SpecialCharTok{{-}}\NormalTok{mean))}
+\NormalTok{  hessTrue }\OtherTok{\textless{}{-}}\NormalTok{ prec}
+  
+  \DocumentationTok{\#\# Compare them:}
+\NormalTok{  grTrue }\SpecialCharTok{{-}}\NormalTok{ grAD }\DocumentationTok{\#\# VERY ACCURATE!!!!!}
+\CommentTok{\#\textgreater{}              [,1]         [,2]         [,3]          [,4] [,5]}
+\CommentTok{\#\textgreater{} [1,] 5.551115e{-}17 5.551115e{-}17 2.775558e{-}17 {-}2.775558e{-}17    0}
+\NormalTok{  grTrue }\SpecialCharTok{{-}}\NormalTok{ grFD }\DocumentationTok{\#\# Not as ACCURATE}
+\CommentTok{\#\textgreater{}              [,1]         [,2]          [,3]         [,4]         [,5]}
+\CommentTok{\#\textgreater{} [1,] 1.442585e{-}11 1.295704e{-}10 {-}6.217386e{-}11 2.828957e{-}11 5.600864e{-}11}
+  
+\NormalTok{  hessTrue }\SpecialCharTok{{-}}\NormalTok{ hessAD }\DocumentationTok{\#\# VERY ACCURATE!!!!!}
+\CommentTok{\#\textgreater{}               [,1]          [,2]          [,3]         [,4]          [,5]}
+\CommentTok{\#\textgreater{} [1,] {-}2.775558e{-}17  6.938894e{-}18 {-}3.469447e{-}18 0.000000e+00  0.000000e+00}
+\CommentTok{\#\textgreater{} [2,]  6.938894e{-}18 {-}2.775558e{-}17 {-}6.938894e{-}18 0.000000e+00 {-}6.938894e{-}18}
+\CommentTok{\#\textgreater{} [3,] {-}1.040834e{-}17 {-}1.387779e{-}17  1.387779e{-}17 3.469447e{-}18  0.000000e+00}
+\CommentTok{\#\textgreater{} [4,]  6.938894e{-}18  3.469447e{-}18  3.469447e{-}18 0.000000e+00  6.938894e{-}18}
+\CommentTok{\#\textgreater{} [5,]  6.938894e{-}18 {-}6.938894e{-}18  3.469447e{-}18 0.000000e+00  0.000000e+00}
+\NormalTok{  hessTrue }\SpecialCharTok{{-}}\NormalTok{ hessFD }\DocumentationTok{\#\# Not as ACCURATE}
+\CommentTok{\#\textgreater{}               [,1]          [,2]          [,3]          [,4]          [,5]}
+\CommentTok{\#\textgreater{} [1,] {-}1.136814e{-}07  1.203314e{-}08  1.702587e{-}08 {-}6.127848e{-}09  1.309743e{-}08}
+\CommentTok{\#\textgreater{} [2,]  1.203314e{-}08 {-}2.088005e{-}07  6.800355e{-}09  2.036351e{-}08  1.284167e{-}08}
+\CommentTok{\#\textgreater{} [3,]  1.702587e{-}08  6.800355e{-}09 {-}2.055042e{-}07  1.003181e{-}08 {-}1.138950e{-}08}
+\CommentTok{\#\textgreater{} [4,] {-}6.127848e{-}09  2.036351e{-}08  1.003181e{-}08 {-}1.904034e{-}07  7.260621e{-}09}
+\CommentTok{\#\textgreater{} [5,]  1.309743e{-}08  1.284167e{-}08 {-}1.138950e{-}08  7.260621e{-}09 {-}4.528078e{-}08}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{the-simple-linear-model}{%
+\subsection{The simple Linear Model}\label{the-simple-linear-model}}
+
+Consider Chinook stock recruitment data from the \texttt{FSAdata}
+package in R from 1979-2000.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(FSAdata)}
+\FunctionTok{data}\NormalTok{(ChinookKR)}
+\FunctionTok{str}\NormalTok{(ChinookKR)}
+\CommentTok{\#\textgreater{} \textquotesingle{}data.frame\textquotesingle{}:    27 obs. of  3 variables:}
+\CommentTok{\#\textgreater{}  $ brood.year: int  1979 1980 1981 1982 1983 1984 1985 1986 1987 1988 ...}
+\CommentTok{\#\textgreater{}  $ spawners  : int  30637 21484 33857 31951 30784 16064 25676 113359 101717 79385 ...}
+\CommentTok{\#\textgreater{}  $ recruits  : int  200698 109430 50968 122187 368159 244052 188722 123247 72981 17450 ...}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{RTMB_GLMM_files/figure-latex/unnamed-chunk-3-1.pdf}
+
+We believe that the stock-recruit relationship follows a Ricker curve,
+where the recruits \(R_i\), in year \(i\), are from the matching
+brood-year spawners \(S_i\), where there is some random noise on the
+observed relationship \(\epsilon_i\), \[
+  R_i = \alpha S_i \text{exp}(-\beta S_i) \text{exp}(\epsilon_i)
+\] Assuming white noise on the log scale,
+\(\epsilon \sim \mathcal{N}(0,\sigma^2)\), where \(\sigma^2\) is the
+variance term. The relationship between spawners and recruits is then
+linear on the log-scale, \[
+  \text{log}(R_i) = \text{log}(\alpha) + \text{log}(S_i) - \beta S_i + \epsilon_i.
+\] If we define, \(Y_i = R_i/S_i\) We may also write this relationship
+as, \[
+  \text{log}(Y_i) = y_i \sim \mathcal{N}(\mu_i, \sigma^2)\\
+  \mu_i = \text{log}(\alpha) - \beta S_i
+\] We can see that this becomes a classic linear model between the mean
+at the log-scale, and the number of spawners. To model these data we
+want to build what is called the ``likelihood'', which is the joint
+probability density of the observations given the parameter values,
+viewed as the probability of the data for a set of parameter values,
+\((\alpha, \beta, \sigma)\). For a Normal distribution, we can write a
+single observation as \[
+  f(y_i) = \frac{1}{\sqrt{2\pi}\sigma}\text{exp}\Big(\frac{-(y_i-\mu_i)^2}{2\sigma^2}\Big).
+\] By assuming independence, the joint density can be written as the
+product of the individual \(n\) observations, \[
+  f(y_1,\ldots,y_n) = \prod_{i=1}^n f(y_i).
+\] The likelihood is then defined as, \[
+  L(\alpha, \beta, \sigma) = f(y_1,\ldots,y_n).
+\] Given that the likelihood is generally defined as a product of
+probabilities, the value tends to become very small making computation
+challenging. Instead, we tend to prefer to work with the log-likelihood,
+\[
+  l(\alpha, \beta, \sigma) = \text{log}(\alpha, \beta)\\
+                   = \sum_{i=1}^n \text{log}\{f(y_i)\}.
+\] In pseudo-code, we want to write this as,
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{  logLik }\OtherTok{\textless{}{-}} \DecValTok{0}
+  \ControlFlowTok{for}\NormalTok{( i }\ControlFlowTok{in} \DecValTok{1}\SpecialCharTok{:}\NormalTok{n ) logLik }\OtherTok{\textless{}{-}}\NormalTok{ logLik }\SpecialCharTok{+} \FunctionTok{f}\NormalTok{(y[i])}
+\end{Highlighting}
+\end{Shaded}
+
+We can fit this model using standard linear models in R,
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{  ChinookKR}\SpecialCharTok{$}\NormalTok{Y }\OtherTok{\textless{}{-}}\NormalTok{ ChinookKR}\SpecialCharTok{$}\NormalTok{recruits}\SpecialCharTok{/}\NormalTok{ChinookKR}\SpecialCharTok{$}\NormalTok{spawners}
+\NormalTok{  ChinookKR}\SpecialCharTok{$}\NormalTok{y }\OtherTok{\textless{}{-}} \FunctionTok{log}\NormalTok{(ChinookKR}\SpecialCharTok{$}\NormalTok{Y)}
+\NormalTok{  fit.lm }\OtherTok{\textless{}{-}} \FunctionTok{lm}\NormalTok{(y }\SpecialCharTok{\textasciitilde{}}\NormalTok{ spawners, }\AttributeTok{data =}\NormalTok{ ChinookKR)}
+  \FunctionTok{summary}\NormalTok{(fit.lm)}
+\CommentTok{\#\textgreater{} }
+\CommentTok{\#\textgreater{} Call:}
+\CommentTok{\#\textgreater{} lm(formula = y \textasciitilde{} spawners, data = ChinookKR)}
+\CommentTok{\#\textgreater{} }
+\CommentTok{\#\textgreater{} Residuals:}
+\CommentTok{\#\textgreater{}      Min       1Q   Median       3Q      Max }
+\CommentTok{\#\textgreater{} {-}2.03451 {-}0.62571  0.06578  0.64158  1.26942 }
+\CommentTok{\#\textgreater{} }
+\CommentTok{\#\textgreater{} Coefficients:}
+\CommentTok{\#\textgreater{}               Estimate Std. Error t value Pr(\textgreater{}|t|)    }
+\CommentTok{\#\textgreater{} (Intercept)  2.143e+00  3.079e{-}01   6.962 9.31e{-}07 ***}
+\CommentTok{\#\textgreater{} spawners    {-}2.517e{-}05  5.018e{-}06  {-}5.016 6.63e{-}05 ***}
+\CommentTok{\#\textgreater{} {-}{-}{-}}
+\CommentTok{\#\textgreater{} Signif. codes:  0 \textquotesingle{}***\textquotesingle{} 0.001 \textquotesingle{}**\textquotesingle{} 0.01 \textquotesingle{}*\textquotesingle{} 0.05 \textquotesingle{}.\textquotesingle{} 0.1 \textquotesingle{} \textquotesingle{} 1}
+\CommentTok{\#\textgreater{} }
+\CommentTok{\#\textgreater{} Residual standard error: 0.9005 on 20 degrees of freedom}
+\CommentTok{\#\textgreater{}   (5 observations deleted due to missingness)}
+\CommentTok{\#\textgreater{} Multiple R{-}squared:  0.5571, Adjusted R{-}squared:  0.535 }
+\CommentTok{\#\textgreater{} F{-}statistic: 25.16 on 1 and 20 DF,  p{-}value: 6.625e{-}05}
+\end{Highlighting}
+\end{Shaded}
+
+Here the intercept term is \(\text{log}(\alpha)\), and \(-\beta\) is
+called logS. Note that in our model \(\beta > 0\). In this case we are
+not able to add that resctriction directly to the model, or I don't know
+how!
+
+\hypertarget{lm-in-rtmb}{%
+\subsection{LM in RTMB}\label{lm-in-rtmb}}
+
+We will now manually build the model as an R function. Specifically for
+\texttt{RTMB} notation we will make the data in the global environment
+and pass the parameters to the model as a named separate list. Note that
+we will generally work with the negative log-likelihood as the standard
+optimzation algorithms find the minimum, which is the same as the
+maximum of the negative function. Note that in theory we want to make
+sure that we are doing optimization over values that are defined on theh
+real line, \((-\infty, \infty)\), but to follow \texttt{lm}, we will
+keep \(\beta\) on the positive scale. This shouldn't be a major issue if
+the value is away from zero, but can cause issues and is bad practice.
+
+Please run the following code and compare the results with the
+\texttt{lm} fit.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{pars }\OtherTok{\textless{}{-}} \FunctionTok{list}\NormalTok{()}
+\NormalTok{pars}\SpecialCharTok{$}\NormalTok{logalpha }\OtherTok{\textless{}{-}} \DecValTok{0}
+\NormalTok{pars}\SpecialCharTok{$}\NormalTok{beta }\OtherTok{\textless{}{-}} \DecValTok{2}
+\NormalTok{pars}\SpecialCharTok{$}\NormalTok{logSD }\OtherTok{\textless{}{-}} \DecValTok{0}
+
+\NormalTok{negLogLik }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(pars)\{}
+  \FunctionTok{getAll}\NormalTok{(pars)  }\DocumentationTok{\#\# attached pars locally in RTMB.}
+\NormalTok{  sd }\OtherTok{\textless{}{-}} \FunctionTok{exp}\NormalTok{(logSD)}
+  
+  \DocumentationTok{\#\# Define negative log likelihood}
+\NormalTok{  negLL }\OtherTok{\textless{}{-}} \DecValTok{0}
+  
+  \DocumentationTok{\#\# NA values to check for.}
+\NormalTok{  chin }\OtherTok{\textless{}{-}}\NormalTok{ ChinookKR[}\SpecialCharTok{!}\FunctionTok{is.na}\NormalTok{(ChinookKR}\SpecialCharTok{$}\NormalTok{recruits),]}
+  
+\NormalTok{  n }\OtherTok{\textless{}{-}} \FunctionTok{nrow}\NormalTok{(chin)}
+  \DocumentationTok{\#\# Mean relationship:}
+\NormalTok{  mu }\OtherTok{\textless{}{-}}\NormalTok{ logalpha }\SpecialCharTok{{-}}\NormalTok{ beta}\SpecialCharTok{*}\NormalTok{chin}\SpecialCharTok{$}\NormalTok{spawners}
+  
+  \FunctionTok{ADREPORT}\NormalTok{(sd)  }\DocumentationTok{\#\# report standard deviation on the real scale with se.}
+  
+  \ControlFlowTok{for}\NormalTok{( i }\ControlFlowTok{in} \DecValTok{1}\SpecialCharTok{:}\NormalTok{n ) negLL }\OtherTok{\textless{}{-}}\NormalTok{ negLL }\SpecialCharTok{{-}} \FunctionTok{dnorm}\NormalTok{(chin}\SpecialCharTok{$}\NormalTok{y[i], mu[i], }\AttributeTok{sd =}\NormalTok{ sd, }\AttributeTok{log =} \ConstantTok{TRUE}\NormalTok{) }
+  \DocumentationTok{\#\# negLL \textless{}{-} {-}sum(dnorm(chin$y, mu, sd = sd, log = TRUE))  \#\# Alternatively.}
+  \FunctionTok{return}\NormalTok{(negLL)}
+\NormalTok{\}}
+
+\FunctionTok{negLogLik}\NormalTok{(pars)}
+\CommentTok{\#\textgreater{} [1] 165625341655}
+\DocumentationTok{\#\# Create RTMB function:}
+\NormalTok{obj }\OtherTok{\textless{}{-}} \FunctionTok{MakeADFun}\NormalTok{(negLogLik, pars, }\AttributeTok{silent=}\ConstantTok{TRUE}\NormalTok{)}
+\NormalTok{obj}\SpecialCharTok{$}\FunctionTok{fn}\NormalTok{()  }\DocumentationTok{\#\# same thing but it\textquotesingle{}s actually running in C++!}
+\CommentTok{\#\textgreater{} [1] 165625341655}
+
+\DocumentationTok{\#\# Now optimize the likelihood:}
+\NormalTok{fit }\OtherTok{\textless{}{-}} \FunctionTok{optim}\NormalTok{(pars, obj}\SpecialCharTok{$}\NormalTok{fn)}
+\NormalTok{fit}\SpecialCharTok{$}\NormalTok{par }\DocumentationTok{\#\# Looks like it fit... but did it?}
+\CommentTok{\#\textgreater{}     logalpha         beta        logSD }
+\CommentTok{\#\textgreater{} 0.3837218729 0.0006844452 1.1987593664}
+
+\DocumentationTok{\#\# It\textquotesingle{}s easier to do optimization if we know the gradients. With RTMB we do!}
+\NormalTok{fit2 }\OtherTok{\textless{}{-}} \FunctionTok{optim}\NormalTok{(pars, }\AttributeTok{fn =}\NormalTok{ obj}\SpecialCharTok{$}\NormalTok{fn, }\AttributeTok{gr =}\NormalTok{ obj}\SpecialCharTok{$}\NormalTok{gr, }\AttributeTok{method =} \StringTok{"BFGS"}\NormalTok{)}
+\NormalTok{fit2}\SpecialCharTok{$}\NormalTok{par}
+\CommentTok{\#\textgreater{}     logalpha         beta        logSD }
+\CommentTok{\#\textgreater{} 1.470188e+00 2.260881e{-}05 1.363465e{-}01}
+
+\NormalTok{fit2}\SpecialCharTok{$}\NormalTok{par }\SpecialCharTok{{-}}\NormalTok{ fit}\SpecialCharTok{$}\NormalTok{par  }\DocumentationTok{\#\# Not the same!!}
+\CommentTok{\#\textgreater{}      logalpha          beta         logSD }
+\CommentTok{\#\textgreater{}  1.0864661789 {-}0.0006618364 {-}1.0624129012}
+\NormalTok{fit}\SpecialCharTok{$}\NormalTok{value }\SpecialCharTok{\textgreater{}}\NormalTok{ fit2}\SpecialCharTok{$}\NormalTok{value  }\DocumentationTok{\#\# Didn\textquotesingle{}t find the min without the gradients. }
+\CommentTok{\#\textgreater{} [1] TRUE}
+\CommentTok{\# value holds the neg log lik at min.}
+
+\DocumentationTok{\#\# Other optimization functions totally okay:}
+\NormalTok{opt }\OtherTok{\textless{}{-}} \FunctionTok{nlminb}\NormalTok{(}\AttributeTok{start =}\NormalTok{ obj}\SpecialCharTok{$}\NormalTok{par, }\AttributeTok{objective =}\NormalTok{ obj}\SpecialCharTok{$}\NormalTok{fn, }\AttributeTok{gradient =}\NormalTok{ obj}\SpecialCharTok{$}\NormalTok{gr, }\AttributeTok{silent =} \ConstantTok{TRUE}\NormalTok{)}
+\NormalTok{opt}\SpecialCharTok{$}\NormalTok{par }\SpecialCharTok{{-}}\NormalTok{ fit2}\SpecialCharTok{$}\NormalTok{par  }\DocumentationTok{\#\# Essentially the same.}
+\CommentTok{\#\textgreater{}      logalpha          beta         logSD }
+\CommentTok{\#\textgreater{}  6.731338e{-}01  2.561713e{-}06 {-}2.888102e{-}01}
+
+\DocumentationTok{\#\# Did we match lm?}
+\NormalTok{opt}\SpecialCharTok{$}\NormalTok{par[}\StringTok{"logalpha"}\NormalTok{] }\SpecialCharTok{{-}} \FunctionTok{coef}\NormalTok{(fit.lm)[}\StringTok{"(Intercept)"}\NormalTok{] }\DocumentationTok{\#\# Pretty much the same.}
+\CommentTok{\#\textgreater{}      logalpha }
+\CommentTok{\#\textgreater{} {-}3.666092e{-}07}
+
+\DocumentationTok{\#\# Did we match lm?}
+\SpecialCharTok{{-}}\NormalTok{opt}\SpecialCharTok{$}\NormalTok{par[}\StringTok{"beta"}\NormalTok{] }\SpecialCharTok{{-}} \FunctionTok{coef}\NormalTok{(fit.lm)[}\StringTok{"spawners"}\NormalTok{] }\DocumentationTok{\#\# Pretty much the same.}
+\CommentTok{\#\textgreater{}         beta }
+\CommentTok{\#\textgreater{} 5.059673e{-}12}
+
+\DocumentationTok{\#\# Did we match lm?}
+\FunctionTok{exp}\NormalTok{(opt}\SpecialCharTok{$}\NormalTok{par[}\StringTok{"logSD"}\NormalTok{]) }\SpecialCharTok{{-}} \FunctionTok{sigma}\NormalTok{(fit.lm)  }\DocumentationTok{\#\# Pretty similar...}
+\CommentTok{\#\textgreater{}       logSD }
+\CommentTok{\#\textgreater{} {-}0.04190658}
+
+\DocumentationTok{\#\# Can get this information from an RTMB report with standard errors too!.}
+\NormalTok{sdrep }\OtherTok{\textless{}{-}} \FunctionTok{sdreport}\NormalTok{(obj)}
+
+\FunctionTok{summary}\NormalTok{(sdrep)}
+\CommentTok{\#\textgreater{}               Estimate   Std. Error}
+\CommentTok{\#\textgreater{} logalpha  2.143322e+00 2.935456e{-}01}
+\CommentTok{\#\textgreater{} beta      2.517052e{-}05 4.784527e{-}06}
+\CommentTok{\#\textgreater{} logSD    {-}1.524637e{-}01 1.507557e{-}01}
+\CommentTok{\#\textgreater{} sd        8.585900e{-}01 1.294373e{-}01}
+\end{Highlighting}
+\end{Shaded}
+
+We see that even for this basic Ricker model, the optimization is
+improved by using automatic differentiation. We build the RTMB model via
+\texttt{MakeADFun} which creates a C++ function that has automatic
+differentiation. From there we can access the function
+\texttt{obj\$fn()}, the gradient \texttt{obj\$gr()} and the Hessian
+\texttt{obj\$he()}. The gradient is used in optimization. In this case,
+the Hessian is used when we use \texttt{sdReport()} as for maximum
+likelihood estimation, the standard error terms come from this.
+
+If we want to calculate the standard error from our model, then we
+calculate the Hessian \(H_{\widehat{\theta}}\), evaluated at the maximum
+likelihood estimate \(\widehat{\theta}\) for all parameters. We then
+find the inverse to get the covariance matrix
+\(\widehat{\Sigma} = H_{\widehat{\theta}}^{-1}\). For the standard
+errors of each parameter estimate, we can then calculate this from the
+diagonal of the covariance matrix,
+\(\widehat{s}_i = \sqrt{\widehat{\Sigma}_{i,i}}\).
+
+\begin{Shaded}
+\begin{Highlighting}[]
+  
+\NormalTok{Hess }\OtherTok{\textless{}{-}}\NormalTok{ obj}\SpecialCharTok{$}\FunctionTok{he}\NormalTok{(obj}\SpecialCharTok{$}\NormalTok{env}\SpecialCharTok{$}\NormalTok{last.par.best) }\DocumentationTok{\#\# last.par.best is the saved best value.}
+\NormalTok{COV }\OtherTok{\textless{}{-}} \FunctionTok{solve}\NormalTok{(Hess) }\DocumentationTok{\#\# Inverse of Hessian}
+\NormalTok{se\_calculated }\OtherTok{\textless{}{-}} \FunctionTok{sqrt}\NormalTok{(}\FunctionTok{diag}\NormalTok{(COV))}
+
+\NormalTok{se\_reported }\OtherTok{\textless{}{-}} \FunctionTok{do.call}\NormalTok{(}\StringTok{\textquotesingle{}c\textquotesingle{}}\NormalTok{, }\FunctionTok{as.list}\NormalTok{(sdrep, }\AttributeTok{what=}\StringTok{"Std"}\NormalTok{))}
+\NormalTok{se\_reported}
+\CommentTok{\#\textgreater{}     logalpha         beta        logSD }
+\CommentTok{\#\textgreater{} 2.935456e{-}01 4.784527e{-}06 1.507557e{-}01}
+\NormalTok{se\_calculated}
+\CommentTok{\#\textgreater{} [1] 2.935456e{-}01 4.784527e{-}06 1.507557e{-}01}
+
+\DocumentationTok{\#\# Does finite difference matter here?}
+\NormalTok{HessFD }\OtherTok{\textless{}{-}}\NormalTok{ pracma}\SpecialCharTok{::}\FunctionTok{hessian}\NormalTok{(obj}\SpecialCharTok{$}\NormalTok{fn, obj}\SpecialCharTok{$}\NormalTok{env}\SpecialCharTok{$}\NormalTok{last.par.best)}
+\NormalTok{COVFD }\OtherTok{\textless{}{-}} \FunctionTok{solve}\NormalTok{(HessFD) }\DocumentationTok{\#\# Inverse of Hessian}
+\NormalTok{se\_finiteDiff }\OtherTok{\textless{}{-}} \FunctionTok{sqrt}\NormalTok{(}\FunctionTok{diag}\NormalTok{(COVFD))}
+
+\NormalTok{se\_finiteDiff }\SpecialCharTok{{-}}\NormalTok{ se\_calculated}
+\CommentTok{\#\textgreater{} [1] {-}1.862409e{-}09 {-}1.854980e{-}14 {-}4.740623e{-}10}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{glmm-example}{%
+\subsection{GLMM Example}\label{glmm-example}}
+
+Under construction\ldots{}
+
+\hypertarget{autoregressive-variance}{%
+\subsection{Autoregressive Variance}\label{autoregressive-variance}}
+
+Consider a continuous observation \(x_t\) that occurs at time \(t\). We
+say that given the previous observation, then \[
+  x_t|x_{t-1} \sim \phi x_{t-1} + \epsilon_t.
+\] where \(\epsilon_t \sim \mathcal{N}(0,\sigma^2)\).
+
+If you remember, one of the basic assumptions we require to build a
+likelihood is that the observations are independent. Here, the
+observations are linearly dependent on the previous one, but are
+conditionally independent. In many applications it is easier to write
+the likelihood as a product of conditionally independent distributions.
+We will start with \(x_1\), which is linearly dependent on some
+unobserved previous state \(x_0\). To figure out the mean and variance,
+we will do some basic algebra to work out the mean, or expected value,
+\(\mathbb{E}(x_1)\), and variance,
+\(\text{var}(x_1) = \mathbb{E}(x_1^2) - \mathbb{E}(x_1)^2\), can be
+written as,
+
+\begin{eqnarray}
+  \mathbb{E}(x_1) & = & \mathbb{E}(\phi x_0) + \mathbb{E}(\epsilon_1)\\
+                  & = & \phi \mathbb{E}(\phi x_0) + 0.
+\end{eqnarray} Assuming
+\(\mathbb{E}(x_1^2) = \mathbb{E}(x_0^2) = \mathbb{E}(x^2)\), we now must
+figure out \begin{eqnarray}
+  \mathbb{E}(x_1^2) & = & \mathbb{E}\{(\phi x_0 + \epsilon)^2\}\\
+                    & = & \mathbb{E}(\phi^2 x_0^2 + 2\phi x_0 \epsilon + \epsilon^2)\\
+                    & = & \phi^2 \mathbb{E}(x_0^2) + 2\phi  \mathbb{E}(\epsilon x_0) + \mathbb{E}(\epsilon^2)\\
+  \mathbb{E}(x_1^2) - \phi^2 \mathbb{E}(x_0^2) & = & \mathbb{E}(\epsilon^2)\\
+  (1-\phi^2) \mathbb{E}(x^2) & = & \mathbb{E}(\epsilon^2)\\
+  \mathbb{E}(x^2) & = & \frac{\mathbb{E}(\epsilon^2)}{ (1-\phi^2) }.  
+\end{eqnarray}
+
+Using the rules of variance defined above, \[
+  \mathbb{E}(\epsilon^2) = \sigma^2 +\mathbb{E}(\epsilon)^2 = \sigma^2.
+\] We now know that,
+
+\[
+  \mathbb{E}(x^2) = \frac{\sigma^2}{ (1-\phi^2) }.  
+\] Finally, assuming that \(\mu = 0\), so that \(\mathbb{E}(x)^2 = 0\),
+the first observation that comes from the limiting distribution is
+simply, \[
+  x_1 \sim \mathcal{N}\Big(0, \frac{\sigma^2}{1-\phi^2}\Big).
+\]
+
+We can then write the joint likelihood as, \[
+  L(\sigma) = f(x_1, \ldots, x_n) = f(x_1) \prod_{i=2}^n f(x_i | x_{i-1}).
+\]
+
+\hypertarget{autoregressive-multivariate-model}{%
+\subsection{Autoregressive Multivariate
+Model}\label{autoregressive-multivariate-model}}
+
+We can also write the autoregressive model as a multivariate normal
+distribution. To do this we need to work out the covariance between
+\(x_t\) and \(x_{t-h}\). This can be defined recursively if we think
+about the covariance in steps,
+
+\begin{eqnarray}
+  \text{cov}(x_t, x_{t-h}) & = & \text{cov}(\phi x_{t-1} + \epsilon_i, x_{t-h})\\
+                           & = & \mathbb{E}\{ ( \phi x_{t-1} + \epsilon_i ) x_{t-h}\} \\
+                           & = & \mathbb{E}\{ ( \phi x_{t-1} x_{t-h} + x_{t-h}\epsilon_i \} \\
+                           & = & \phi \mathbb{E} ( x_{t-1} x_{t-h} ) + \mathbb{E}(x_{t-h}\epsilon_i) 
+                           & = & \phi \mathbb{E} ( x_{t-1} x_{t-h} ) + 0 \\
+                           & = & \phi \text{cov}(x_{t-1},x_{t-h})\\
+\end{eqnarray}
+
+We then can infer that if we eventually step recursively back to
+\(x_{t-1} = x_{t-h} = x_1\), then
+\(\text{cov}(x_{1},x_{1}) = \text{var}(x_{1}) = \frac{\sigma^2}{ (1-\phi^2) }\).
+As a result, we get the following generally,
+
+\[
+  \text{cov}(x_t, x_{t-h}) = \phi^{|t-j|} \frac{\sigma^2}{ (1-\phi^2) }.
+\]
+
+Using pseudo code to define the variance matrix,
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{S }\OtherTok{\textless{}{-}} \FunctionTok{matrix}\NormalTok{(}\DecValTok{0}\NormalTok{,n,n)}
+\ControlFlowTok{for}\NormalTok{(i }\ControlFlowTok{in} \DecValTok{1}\SpecialCharTok{:}\NormalTok{n)\{}
+  \ControlFlowTok{for}\NormalTok{(j }\ControlFlowTok{in} \DecValTok{1}\SpecialCharTok{:}\NormalTok{n)\{}
+\NormalTok{    S[i,j] }\OtherTok{\textless{}{-}}\NormalTok{ sigma}\SpecialCharTok{\^{}}\DecValTok{2}\SpecialCharTok{/}\NormalTok{(}\DecValTok{1}\SpecialCharTok{{-}}\NormalTok{phi}\SpecialCharTok{\^{}}\DecValTok{2}\NormalTok{)}\SpecialCharTok{*}\NormalTok{phi}\SpecialCharTok{\^{}}\FunctionTok{abs}\NormalTok{(i}\SpecialCharTok{{-}}\NormalTok{j)}
+\NormalTok{  \}}
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+We can then write the likelihood as, \[
+  L(\sigma) = f(x_1, \ldots, x_n).
+\] where \[
+  x_1,\ldots,x_n \sim \mathcal{N}(\mathbf{\mu}, S),
+\] where \(S\) is the covariance matrix defined above, and mean is
+\(\mathbf{\mu} = (0, \ldots, 0)\). It should become clear that this
+matrix \(S\) is a dense matrix, meaning that all elements are non-zero.
+However, if we take the inverse of a matrix that is defined this way it
+turns out to be sparse. LATER ADD MATHS HERE.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{phi }\OtherTok{\textless{}{-}} \FloatTok{0.5}
+\NormalTok{sigma }\OtherTok{\textless{}{-}} \FloatTok{1.5}
+\NormalTok{n }\OtherTok{\textless{}{-}} \DecValTok{5}
+\NormalTok{S }\OtherTok{\textless{}{-}} \FunctionTok{matrix}\NormalTok{(}\DecValTok{0}\NormalTok{,n,n)}
+\ControlFlowTok{for}\NormalTok{(i }\ControlFlowTok{in} \DecValTok{1}\SpecialCharTok{:}\NormalTok{n)\{}
+  \ControlFlowTok{for}\NormalTok{(j }\ControlFlowTok{in} \DecValTok{1}\SpecialCharTok{:}\NormalTok{n)\{}
+\NormalTok{    S[i,j] }\OtherTok{\textless{}{-}}\NormalTok{ sigma}\SpecialCharTok{\^{}}\DecValTok{2}\SpecialCharTok{/}\NormalTok{(}\DecValTok{1}\SpecialCharTok{{-}}\NormalTok{phi}\SpecialCharTok{\^{}}\DecValTok{2}\NormalTok{)}\SpecialCharTok{*}\NormalTok{phi}\SpecialCharTok{\^{}}\FunctionTok{abs}\NormalTok{(i}\SpecialCharTok{{-}}\NormalTok{j)}
+\NormalTok{  \}}
+\NormalTok{\}}
+\NormalTok{P }\OtherTok{\textless{}{-}} \FunctionTok{matrix}\NormalTok{(}\DecValTok{0}\NormalTok{,n,n)}
+\FunctionTok{diag}\NormalTok{(P) }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\FunctionTok{rep}\NormalTok{(}\DecValTok{1}\SpecialCharTok{+}\NormalTok{phi}\SpecialCharTok{\^{}}\DecValTok{2}\NormalTok{, n}\DecValTok{{-}2}\NormalTok{), }\DecValTok{1}\NormalTok{)}
+\NormalTok{P[}\FunctionTok{cbind}\NormalTok{(}\DecValTok{2}\SpecialCharTok{:}\NormalTok{n,}\DecValTok{1}\SpecialCharTok{:}\NormalTok{(n}\DecValTok{{-}1}\NormalTok{))] }\OtherTok{\textless{}{-}} \SpecialCharTok{{-}}\NormalTok{phi}
+\NormalTok{P[}\FunctionTok{cbind}\NormalTok{(}\DecValTok{1}\SpecialCharTok{:}\NormalTok{(n}\DecValTok{{-}1}\NormalTok{),}\DecValTok{2}\SpecialCharTok{:}\NormalTok{n)] }\OtherTok{\textless{}{-}} \SpecialCharTok{{-}}\NormalTok{phi}
+\NormalTok{P }\OtherTok{\textless{}{-}}\NormalTok{ P}\SpecialCharTok{*}\NormalTok{sigma}\SpecialCharTok{\^{}{-}}\DecValTok{2}
+\NormalTok{P}
+\CommentTok{\#\textgreater{}            [,1]       [,2]       [,3]       [,4]       [,5]}
+\CommentTok{\#\textgreater{} [1,]  0.4444444 {-}0.2222222  0.0000000  0.0000000  0.0000000}
+\CommentTok{\#\textgreater{} [2,] {-}0.2222222  0.5555556 {-}0.2222222  0.0000000  0.0000000}
+\CommentTok{\#\textgreater{} [3,]  0.0000000 {-}0.2222222  0.5555556 {-}0.2222222  0.0000000}
+\CommentTok{\#\textgreater{} [4,]  0.0000000  0.0000000 {-}0.2222222  0.5555556 {-}0.2222222}
+\CommentTok{\#\textgreater{} [5,]  0.0000000  0.0000000  0.0000000 {-}0.2222222  0.4444444}
+
+\FunctionTok{solve}\NormalTok{(S)}
+\CommentTok{\#\textgreater{}            [,1]       [,2]          [,3]          [,4]       [,5]}
+\CommentTok{\#\textgreater{} [1,]  0.4444444 {-}0.2222222 {-}1.850372e{-}17 {-}9.251859e{-}18  0.0000000}
+\CommentTok{\#\textgreater{} [2,] {-}0.2222222  0.5555556 {-}2.222222e{-}01  0.000000e+00  0.0000000}
+\CommentTok{\#\textgreater{} [3,]  0.0000000 {-}0.2222222  5.555556e{-}01 {-}2.222222e{-}01  0.0000000}
+\CommentTok{\#\textgreater{} [4,]  0.0000000  0.0000000 {-}2.222222e{-}01  5.555556e{-}01 {-}0.2222222}
+\CommentTok{\#\textgreater{} [5,]  0.0000000  0.0000000  0.000000e+00 {-}2.222222e{-}01  0.4444444}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\DocumentationTok{\#\# Simulate some data:}
+\NormalTok{x }\OtherTok{\textless{}{-}} \FunctionTok{numeric}\NormalTok{(n)}
+\NormalTok{x[}\DecValTok{1}\NormalTok{] }\OtherTok{\textless{}{-}} \FunctionTok{rnorm}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{0}\NormalTok{, }\AttributeTok{sd=}\NormalTok{sigma}\SpecialCharTok{/}\NormalTok{(}\DecValTok{1}\SpecialCharTok{{-}}\NormalTok{phi}\SpecialCharTok{*}\NormalTok{phi))}
+\ControlFlowTok{for}\NormalTok{( i }\ControlFlowTok{in} \DecValTok{2}\SpecialCharTok{:}\NormalTok{n ) x[i] }\OtherTok{\textless{}{-}} \FunctionTok{rnorm}\NormalTok{(}\DecValTok{1}\NormalTok{, }\AttributeTok{mean =}\NormalTok{ phi}\SpecialCharTok{*}\NormalTok{x[i}\DecValTok{{-}1}\NormalTok{], }\AttributeTok{sd =}\NormalTok{ sigma)}
+
+\DocumentationTok{\#\# Find the log likelihood:}
+\NormalTok{logLik }\OtherTok{\textless{}{-}} \FunctionTok{dnorm}\NormalTok{(x[}\DecValTok{1}\NormalTok{], }\AttributeTok{mean =} \DecValTok{0}\NormalTok{, }\AttributeTok{sd =}\NormalTok{ sigma}\SpecialCharTok{/}\FunctionTok{sqrt}\NormalTok{(}\DecValTok{1}\SpecialCharTok{{-}}\NormalTok{phi}\SpecialCharTok{*}\NormalTok{phi), }\AttributeTok{log =} \ConstantTok{TRUE}\NormalTok{)}
+\ControlFlowTok{for}\NormalTok{( i }\ControlFlowTok{in} \DecValTok{2}\SpecialCharTok{:}\NormalTok{n ) logLik }\OtherTok{\textless{}{-}}\NormalTok{ logLik }\SpecialCharTok{+} \FunctionTok{dnorm}\NormalTok{(x[i], }\AttributeTok{mean =}\NormalTok{ phi}\SpecialCharTok{*}\NormalTok{x[i}\DecValTok{{-}1}\NormalTok{], }\AttributeTok{sd =}\NormalTok{ sigma, }\AttributeTok{log =} \ConstantTok{TRUE}\NormalTok{)}
+
+\DocumentationTok{\#\# Find the log likelihood:}
+\NormalTok{logLikMat }\OtherTok{\textless{}{-}}\NormalTok{ RTMB}\SpecialCharTok{::}\FunctionTok{dmvnorm}\NormalTok{(x, }\AttributeTok{mu =} \FunctionTok{rep}\NormalTok{(}\DecValTok{0}\NormalTok{,n), }\AttributeTok{Sigma =}\NormalTok{ S, }\AttributeTok{log =} \ConstantTok{TRUE}\NormalTok{)}
+
+\NormalTok{logLik }\SpecialCharTok{{-}}\NormalTok{ logLikMat  }\DocumentationTok{\#\# Pretty much the same.}
+\CommentTok{\#\textgreater{} [1] 0}
+\end{Highlighting}
+\end{Shaded}
+
+
+\end{document}
