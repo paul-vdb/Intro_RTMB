@@ -365,3 +365,32 @@ logLikMat <- RTMB::dmvnorm(x, mu = rep(0,n), Sigma = S, log = TRUE)
 
 logLik - logLikMat  ## Pretty much the same.
 ```
+
+## Generalized Additive Models:
+
+Here is a very basic start to running a GAM using the `splines2` package for the basis function.
+
+```{r}
+library(splines2)
+data(chicagoNMMAPS, package = "dlnm")
+plot(chicagoNMMAPS$doy, chicagoNMMAPS$temp)
+
+# define the knots
+knots <- c(100, 200, 300)
+# and the matrix
+bsMat <- bSpline(chicagoNMMAPS$doy, 
+                 knots = knots, 
+                 degree = 3,
+                 periodic = TRUE, ## Day of year is periodic.
+                 intercept = TRUE)
+
+## What do the basis functions look like?
+plot(bsMat)
+
+fit <- lm( chicagoNMMAPS$temp ~ -1 + bsMat )  ## Intercept is in bsMat
+pred <- bsMat %*% coef(fit)
+
+plot(chicagoNMMAPS$doy[1:365], pred[1:365], type = "l", col = 'red', lwd = 3)
+points(chicagoNMMAPS$doy, chicagoNMMAPS$temp, pch = 16, cex = 0.1)
+
+```
